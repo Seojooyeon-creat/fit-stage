@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>FIT STAGE — Experience</title>
+<style>
+:root{
+  --black:#0c0c0a; --panel:#171510; --white:#f5f1e9; --ivory:#ded7ca;
+  --gold:#b9893f; --gold2:#d3a250; --muted:rgba(245,241,233,.66);
+  --subtle:rgba(245,241,233,.3); --line:rgba(185,137,63,.24); --line2:rgba(245,241,233,.09);
+}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;color:var(--white);
+  font-family:'Pretendard','Apple SD Gothic Neo',Inter,-apple-system,'Segoe UI',sans-serif;
+  -webkit-font-smoothing:antialiased;
+  background:
+   radial-gradient(circle at 76% 20%,rgba(185,137,63,.10),transparent 26%),
+   linear-gradient(135deg,#090907 0%,#11100d 54%,#090806 100%);}
+
+/* HEADER */
+.header{height:96px;padding:0 5vw;display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid var(--line2);background:rgba(12,12,10,.82);backdrop-filter:blur(18px)}
+.brand{font-size:22px;font-weight:800;letter-spacing:.34em;color:var(--white)}
+.hmeta{display:flex;align-items:center;gap:11px;color:var(--gold);font-size:13px;font-weight:700;letter-spacing:.2em}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--gold2);box-shadow:0 0 12px rgba(211,162,80,.6)}
+
+/* HERO */
+.hero{width:min(1500px,92vw);margin:0 auto;padding:70px 0 40px;display:grid;
+  grid-template-columns:1fr 1fr;gap:5vw;align-items:center}
+.kick{display:flex;align-items:center;gap:16px}
+.kidx{color:var(--gold2);font-family:Georgia,serif;font-size:19px;font-style:italic}
+.klabel{color:var(--gold);font-size:15px;font-weight:700;letter-spacing:.22em}
+.hero h1{margin:32px 0 30px;font-family:'Helvetica Neue',Arial,sans-serif;
+  font-size:clamp(72px,8vw,128px);font-weight:300;line-height:.86;letter-spacing:-.06em}
+.hero p{margin:0 0 34px;color:rgba(245,241,233,.8);font-size:22px;line-height:1.8}
+.cta{display:inline-flex;align-items:center;gap:14px;padding:20px 34px;border-radius:16px;
+  border:1px solid rgba(211,162,80,.5);background:rgba(211,162,80,.12);color:#f4e6c9;
+  font-size:20px;font-weight:700;letter-spacing:.03em;text-decoration:none;transition:.2s}
+.cta:hover{background:rgba(211,162,80,.22);transform:translateY(-2px)}
+.cta .big3d{font-size:24px}
+
+/* HERO VISUAL (watch) */
+.visual{display:flex;justify-content:center;align-items:center}
+.vframe{position:relative;width:min(680px,100%);min-height:500px;border-radius:20px;overflow:hidden;
+  border:1px solid var(--line);background:linear-gradient(145deg,rgba(36,31,22,.95),rgba(15,14,11,.98));
+  box-shadow:0 30px 80px rgba(0,0,0,.34)}
+.vphoto{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 26%}
+.vfade{position:absolute;left:0;right:0;bottom:0;height:42%;pointer-events:none;
+  background:linear-gradient(0deg,rgba(13,12,10,.98) 6%,rgba(13,12,10,.5) 55%,transparent)}
+.vcopy{position:absolute;left:36px;bottom:34px;display:flex;flex-direction:column;gap:12px;z-index:2}
+.vcopy span{color:var(--gold2);font-family:Georgia,serif;font-size:15px;font-style:italic}
+.vcopy strong{color:var(--ivory);font-size:24px;font-weight:400;line-height:1.35}
+
+/* EXPERIENCE */
+.exp{width:min(1500px,92vw);margin:0 auto;padding:26px 0 90px}
+.exp-head{padding:28px 0 24px;border-top:1px solid var(--line2);display:flex;align-items:flex-end;justify-content:space-between}
+.exp-head>div>span{color:var(--gold);font-size:13px;font-weight:700;letter-spacing:.18em}
+.exp-head h2{margin:12px 0 0;font-size:44px;font-weight:500;letter-spacing:-.04em}
+.exp-head>p{margin:0;color:var(--muted);font-size:16px;line-height:1.7;text-align:right}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.card{min-height:330px;padding:30px;border:1px solid var(--line2);border-radius:16px;
+  display:flex;flex-direction:column;justify-content:space-between;color:var(--white);text-decoration:none;
+  background:linear-gradient(145deg,rgba(24,22,17,.78),rgba(12,12,10,.92));
+  transition:transform .25s,border-color .25s,background .25s}
+.card:hover{transform:translateY(-5px);border-color:rgba(185,137,63,.45);
+  background:linear-gradient(145deg,rgba(35,30,21,.9),rgba(15,14,11,.95))}
+.card.feature{border-color:rgba(211,162,80,.4);background:linear-gradient(145deg,rgba(48,38,20,.9),rgba(18,15,10,.96))}
+.ctop{display:flex;align-items:center;justify-content:space-between}
+.cnum{color:var(--gold2);font-family:Georgia,serif;font-size:20px;font-style:italic}
+.clabel{color:var(--subtle);font-size:12px;font-weight:700;letter-spacing:.16em}
+.cbody h3{margin:0 0 16px;font-size:34px;font-weight:400;letter-spacing:-.03em}
+.cbody p{margin:0;color:rgba(245,241,233,.62);font-size:16px;line-height:1.7}
+.cfoot{padding-top:20px;border-top:1px solid var(--line2);display:flex;align-items:center;justify-content:space-between}
+.cfoot span{color:var(--gold);font-size:13px;font-weight:700;letter-spacing:.14em}
+.cfoot strong{color:var(--gold2);font-size:24px;font-weight:400}
+
+.footer{width:min(1500px,92vw);margin:0 auto;padding:22px 0 34px;border-top:1px solid var(--line2);
+  display:flex;justify-content:space-between;color:rgba(245,241,233,.3);font-size:12px;font-weight:700;letter-spacing:.16em}
+
+@media(max-width:1100px){.hero{grid-template-columns:1fr}.grid{grid-template-columns:1fr 1fr}}
+@media(max-width:640px){.grid{grid-template-columns:1fr}.hero h1{font-size:64px}.exp-head{flex-direction:column;align-items:flex-start;gap:14px}.exp-head>p{text-align:left}}
+</style>
+</head>
+<body>
+<header class="header">
+  <div class="brand">FIT STAGE</div>
+  <div class="hmeta"><span class="dot"></span>AGENT-FIRST RETAIL EXPERIENCE</div>
+</header>
+
+<section class="hero">
+  <div>
+    <div class="kick"><span class="kidx">00</span><span class="klabel">FIT STAGE EXPERIENCE</span></div>
+    <h1>Shopping,<br/>re-staged.</h1>
+    <p>온라인처럼 탐색하고,<br/>오프라인처럼 직접 경험하는<br/>새로운 매장 인터페이스.</p>
+    <a class="cta" href="/ui/walk.html"><span class="big3d">✦</span> 3D 워크스루 입장</a>
+  </div>
+
+  <div class="visual">
+    <div class="vframe">
+      <img class="vphoto" src="/ui/watch-hero.jpg" alt="FIT STAGE Shop Watch"/>
+      <div class="vfade"></div>
+      <div class="vcopy"><span>01 / 03</span><strong>A new interface<br/>for physical retail.</strong></div>
+    </div>
+  </div>
+</section>
+
+<section class="exp">
+  <div class="exp-head">
+    <div><span>SELECT EXPERIENCE</span><h2>어떤 화면을 체험하시겠어요?</h2></div>
+    <p>하나의 쇼핑 경험을<br/>세 개의 인터페이스로 확인하세요.</p>
+  </div>
+
+  <div class="grid">
+    <a class="card" href="/ui/watch.html">
+      <div class="ctop"><span class="cnum">01</span><span class="clabel">WATCH</span></div>
+      <div class="cbody"><h3>Customer Watch</h3><p>NFC 태그로 상품을 확인하고, 손목에서 바로 피팅룸으로 보냅니다.</p></div>
+      <div class="cfoot"><span>ENTER WATCH</span><strong>→</strong></div>
+    </a>
+
+    <a class="card" href="/ui/mirror.html">
+      <div class="ctop"><span class="cnum">02</span><span class="clabel">FITTING ROOM</span></div>
+      <div class="cbody"><h3>Private Mirror</h3><p>컨시어지와 대화하며 추천을 받고, 옷이 워드로브로 배달됩니다.</p></div>
+      <div class="cfoot"><span>ENTER ROOM</span><strong>→</strong></div>
+    </a>
+
+    <a class="card feature" href="/ui/walk.html">
+      <div class="ctop"><span class="cnum">03</span><span class="clabel">3D WALKTHROUGH</span></div>
+      <div class="cbody"><h3>3D Walkthrough</h3><p>1인칭으로 매장을 걸으며 NFC 스캔·피팅룸 전송을 직접 체험합니다.</p></div>
+      <div class="cfoot"><span>ENTER 3D</span><strong>✦</strong></div>
+    </a>
+  </div>
+</section>
+
+<footer class="footer">
+  <span>FIT STAGE / HACKATHON PROTOTYPE</span>
+  <span>WATCH · FITTING ROOM · 3D WALKTHROUGH</span>
+</footer>
+</body>
+</html>

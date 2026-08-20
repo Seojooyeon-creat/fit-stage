@@ -1,0 +1,304 @@
+[
+  {
+    "productId": "p_1001",
+    "name": "스트럭처드 트러커 재킷",
+    "category": "outer",
+    "color": "camel",
+    "price": 698000,
+    "sizes": [
+      { "size": "M", "stock": 2 },
+      { "size": "L", "stock": 1 },
+      { "size": "XL", "stock": 0 }
+    ],
+    "tags": {
+      "tpo": ["interview", "office"],
+      "formality": 4,
+      "fit": "regular",
+      "tone": ["warm"]
+    },
+    "styleNote": "어깨선이 부드러워 격식은 있지만 딱딱해 보이지 않는다. 셔츠 위에 걸치면 면접 자리에 알맞은 단정함이 완성된다.",
+    "reviewSummary": "한 치수 작게 나온다는 후기 다수. 어깨가 편하다는 평.",
+    "availability": { "store": true, "online": true },
+    "imageUrl": "/static/products/p_1001.png"
+  },
+  {
+    "productId": "p_1002",
+    "name": "튤립 실크 셔츠",
+    "category": "shirt",
+    "color": "ivory",
+    "price": 258000,
+    "sizes": [
+      { "size": "S", "stock": 3 },
+      { "size": "M", "stock": 2 },
+      { "size": "L", "stock": 0 }
+    ],
+    "tags": {
+      "tpo": ["interview", "date", "office"],
+      "formality": 3,
+      "fit": "slim",
+      "tone": ["soft", "bright"]
+    },
+    "styleNote": "칼라가 낮아 넥타이 없이도 격식이 선다. 은은한 광택이 얼굴을 밝게 받쳐 준다.",
+    "reviewSummary": "비침이 적당하고 다림질이 편하다는 평. 정사이즈.",
+    "availability": { "store": true, "online": true },
+    "imageUrl": "/static/products/p_1002.png"
+  },
+  {
+    "productId": "p_1003",
+    "name": "테이퍼드 울 슬랙스",
+    "category": "bottom",
+    "color": "charcoal",
+    "price": 428000,
+    "sizes": [
+      { "size": "S", "stock": 2 },
+      { "size": "M", "stock": 3 },
+      { "size": "L", "stock": 1 }
+    ],
+    "tags": {
+      "tpo": ["interview", "office"],
+      "formality": 4,
+      "fit": "tapered",
+      "tone": ["cool"]
+    },
+    "styleNote": "발목으로 갈수록 좁아지는 실루엣이 다리를 길어 보이게 한다. 재킷과 매치하면 정돈된 인상.",
+    "reviewSummary": "구김이 덜하고 신축성이 있어 하루 종일 편하다는 평.",
+    "availability": { "store": true, "online": true },
+    "imageUrl": "/static/products/p_1003.png"
+  },
+  {
+    "productId": "p_1004",
+    "name": "울 오버코트",
+    "category": "outer",
+    "color": "burgundy",
+    "price": 1180000,
+    "sizes": [
+      { "size": "M", "stock": 1 },
+      { "size": "L", "stock": 1 },
+      { "size": "XL", "stock": 0 }
+    ],
+    "tags": {
+      "tpo": ["office", "date"],
+      "formality": 4,
+      "fit": "relaxed",
+      "tone": ["deep", "warm"]
+    },
+    "styleNote": "깊은 버건디가 차분한 무게감을 준다. 어깨가 넉넉해 이너에 니트를 겹쳐 입어도 여유롭다.",
+    "reviewSummary": "울 함량이 높아 보온성이 좋다는 평. 색이 사진보다 은은하다는 후기.",
+    "availability": { "store": true, "online": true },
+    "imageUrl": "/static/products/p_1004.png"
+  },
+  {
+    "productId": "p_1005",
+    "name": "코튼 옥스퍼드 셔츠",
+    "category": "shirt",
+    "color": "skyblue",
+    "price": 128000,
+    "sizes": [
+      { "size": "S", "stock": 4 },
+      { "size": "M", "stock": 3 },
+      { "size": "L", "stock": 2 }
+    ],
+    "tags": {
+      "tpo": ["office", "casual"],
+      "formality": 3,
+      "fit": "regular",
+      "tone": ["fresh", "cool"]
+    },
+    "styleNote": "탄탄한 옥스퍼드 조직이라 단정하면서도 편안하다. 재킷 안에도, 단독으로도 어울린다.",
+    "reviewSummary": "세탁 후에도 형태가 잘 유지된다는 평. 목둘레가 여유롭다는 후기.",
+    "availability": { "store": true, "online": true },
+    "imageUrl": "/static/products/p_1005.png"
+  },
+  {
+    "productId": "p_1006",
+    "name": "릴렉스드 카디건",
+    "category": "top",
+    "color": "oatmeal",
+    "price": 198000,
+    "sizes": [
+      { "size": "S", "stock": 2 },
+      { "size": "M", "stock": 2 },
+      { "size": "L", "stock": 0 }
+    ],
+    "tags": {
+      "tpo": ["casual", "date"],
+      "formality": 2,
+      "fit": "relaxed",
+      "tone": ["soft", "warm"]
+    },
+    "styleNote": "부드러운 오트밀 톤이 편안한 인상을 준다. 셔츠 위에 걸치면 힘을 뺀 격식이 완성된다.",
+    "reviewSummary": "보풀이 적고 촉감이 좋다는 평. 넉넉한 핏.",
+    "availability": { "store": true, "online": true },
+    "imageUrl": "/static/products/p_1006.png"
+  },
+  {
+    "productId": "p_1007",
+    "name": "메리노 니트 폴로",
+    "category": "top",
+    "color": "navy",
+    "price": 168000,
+    "sizes": [
+      { "size": "S", "stock": 3 },
+      { "size": "M", "stock": 1 },
+      { "size": "L", "stock": 2 }
+    ],
+    "tags": {
+      "tpo": ["office", "date"],
+      "formality": 3,
+      "fit": "slim",
+      "tone": ["cool", "deep"]
+    },
+    "styleNote": "칼라가 있는 니트라 캐주얼과 격식 사이의 균형을 잡아 준다. 슬랙스와 매치하기 좋다.",
+    "reviewSummary": "얇지만 비침이 없어 사계절 입기 좋다는 평.",
+    "availability": { "store": true, "online": true },
+    "imageUrl": "/static/products/p_1007.png"
+  },
+  {
+    "productId": "p_1008",
+    "name": "슬림 치노 팬츠",
+    "category": "bottom",
+    "color": "beige",
+    "price": 148000,
+    "sizes": [
+      { "size": "30", "stock": 2 },
+      { "size": "32", "stock": 0 },
+      { "size": "34", "stock": 2 }
+    ],
+    "tags": {
+      "tpo": ["casual", "office"],
+      "formality": 2,
+      "fit": "slim",
+      "tone": ["warm", "neutral"]
+    },
+    "styleNote": "깔끔한 베이지 치노는 어떤 상의와도 무난하게 어울린다. 슬림한 라인이 정돈된 느낌을 준다.",
+    "reviewSummary": "허리가 편하고 길이가 적당하다는 평. 32 사이즈 재입고 문의 많음.",
+    "availability": { "store": true, "online": true },
+    "imageUrl": "/static/products/p_1008.png"
+  },
+  {
+    "productId": "p_1009",
+    "name": "더블 브레스티드 블레이저",
+    "category": "outer",
+    "color": "navy",
+    "price": 620000,
+    "sizes": [
+      { "size": "M", "stock": 2 },
+      { "size": "L", "stock": 2 },
+      { "size": "XL", "stock": 1 }
+    ],
+    "tags": {
+      "tpo": ["interview", "office"],
+      "formality": 5,
+      "fit": "structured",
+      "tone": ["deep", "cool"]
+    },
+    "styleNote": "각 잡힌 더블 브레스티드 라인이 확고한 격식을 만든다. 격식 있는 면접이나 발표 자리에 어울린다.",
+    "reviewSummary": "재단이 정확하고 라펠이 아름답다는 평. 다소 정장에 가깝다는 후기.",
+    "availability": { "store": true, "online": true },
+    "imageUrl": "/static/products/p_1009.png"
+  },
+  {
+    "productId": "p_1010",
+    "name": "실크 블렌드 타이",
+    "category": "acc",
+    "color": "burgundy",
+    "price": 89000,
+    "sizes": [
+      { "size": "OS", "stock": 5 }
+    ],
+    "tags": {
+      "tpo": ["interview", "office"],
+      "formality": 5,
+      "fit": "regular",
+      "tone": ["deep", "warm"]
+    },
+    "styleNote": "깊은 버건디 타이 한 장이 전체 룩의 격식을 끌어올린다. 네이비·차콜과 특히 잘 맞는다.",
+    "reviewSummary": "매듭이 예쁘게 잡히고 광택이 과하지 않다는 평.",
+    "availability": { "store": true, "online": true },
+    "imageUrl": "/static/products/p_1010.png"
+  },
+  {
+    "productId": "p_1011",
+    "name": "레더 벨트",
+    "category": "acc",
+    "color": "brown",
+    "price": 78000,
+    "sizes": [
+      { "size": "OS", "stock": 8 }
+    ],
+    "tags": {
+      "tpo": ["office", "casual"],
+      "formality": 3,
+      "fit": "regular",
+      "tone": ["warm"]
+    },
+    "styleNote": "매끈한 브라운 레더가 슬랙스·치노와 자연스럽게 이어진다. 버클이 작아 과하지 않다.",
+    "reviewSummary": "가죽 질감이 좋고 구멍 간격이 적당하다는 평.",
+    "availability": { "store": true, "online": true },
+    "imageUrl": "/static/products/p_1011.png"
+  },
+  {
+    "productId": "p_1012",
+    "name": "플리츠 미디 스커트",
+    "category": "bottom",
+    "color": "charcoal",
+    "price": 218000,
+    "sizes": [
+      { "size": "S", "stock": 2 },
+      { "size": "M", "stock": 2 },
+      { "size": "L", "stock": 1 }
+    ],
+    "tags": {
+      "tpo": ["office", "date"],
+      "formality": 3,
+      "fit": "regular",
+      "tone": ["cool"]
+    },
+    "styleNote": "규칙적인 주름이 걸을 때마다 우아하게 움직인다. 니트나 셔츠와 매치하면 단정한 오피스 룩.",
+    "reviewSummary": "주름이 잘 살아 있고 안감이 있어 비침이 없다는 평.",
+    "availability": { "store": true, "online": true },
+    "imageUrl": "/static/products/p_1012.png"
+  },
+  {
+    "productId": "p_1013",
+    "name": "오버사이즈 후드",
+    "category": "top",
+    "color": "gray",
+    "price": 118000,
+    "sizes": [
+      { "size": "S", "stock": 3 },
+      { "size": "M", "stock": 3 },
+      { "size": "L", "stock": 3 }
+    ],
+    "tags": {
+      "tpo": ["casual"],
+      "formality": 1,
+      "fit": "oversized",
+      "tone": ["neutral"]
+    },
+    "styleNote": "넉넉한 오버사이즈 실루엣으로 힘을 뺀 편안함을 준다. 주말 캐주얼 룩에 알맞다.",
+    "reviewSummary": "기모가 도톰하고 끈이 튼튼하다는 평. 한 치수 크게 나옴.",
+    "availability": { "store": true, "online": true },
+    "imageUrl": "/static/products/p_1013.png"
+  },
+  {
+    "productId": "p_1014",
+    "name": "캐시미어 머플러",
+    "category": "acc",
+    "color": "camel",
+    "price": 158000,
+    "sizes": [
+      { "size": "OS", "stock": 4 }
+    ],
+    "tags": {
+      "tpo": ["casual", "date", "office"],
+      "formality": 3,
+      "fit": "regular",
+      "tone": ["warm", "soft"]
+    },
+    "styleNote": "부드러운 카멜 캐시미어가 코트 위에서 따뜻한 포인트가 된다. 목에 두르면 얼굴이 화사해진다.",
+    "reviewSummary": "가볍고 따뜻하며 정전기가 적다는 평.",
+    "availability": { "store": true, "online": true },
+    "imageUrl": "/static/products/p_1014.png"
+  }
+]

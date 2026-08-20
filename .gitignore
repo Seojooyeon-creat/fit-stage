@@ -1,0 +1,35 @@
+# 환경 변수 (API 키 — 절대 커밋 금지)
+.env
+.env.*
+!.env.example
+
+# 파이썬
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+
+# 가상환경
+.venv/
+venv/
+env/
+
+# OS / 에디터
+.DS_Store
+.idea/
+.vscode/
+
+# 스펙 문서 (커밋 제외 — 요청)
+docs/
+
+# 참고용 원본 디자인·프로토타입 (실행 프로젝트는 web/에 통합됨)
+/fit-stage-mirror-design.html
+/fit-stage-watch-sim.html
+/fit-stage-v16.html
+/fit-stage-structure.svg
+/watch_design.jpeg
+/FitStage_front/
+
+# 로컬 에이전트 설정
+.claude/

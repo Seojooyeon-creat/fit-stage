@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>FIT STAGE — 1인칭 워크스루</title>
+<style>
+  html,body{margin:0;height:100%;overflow:hidden;background:#0f0e0d;font-family:'Pretendard','Apple SD Gothic Neo','Noto Sans KR',sans-serif;color:#f3efe9}
+  #c{display:block}
+  .ui{position:fixed;left:0;top:0;padding:16px 18px;pointer-events:none}
+  .title{font-size:15px;font-weight:700;letter-spacing:.02em}
+  .sub{font-size:12px;opacity:.7;margin-top:2px}
+  #cap{position:fixed;left:50%;bottom:88px;transform:translateX(-50%);font-size:15px;font-weight:600;
+       background:rgba(20,18,16,.55);padding:8px 16px;border-radius:20px;opacity:0;transition:opacity .4s;backdrop-filter:blur(6px);white-space:nowrap}
+  .bar{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+  button{pointer-events:auto;font-family:inherit;font-size:13px;font-weight:600;color:#f3efe9;
+    background:rgba(40,37,33,.85);border:1px solid rgba(255,255,255,.15);padding:10px 18px;border-radius:24px;cursor:pointer;backdrop-filter:blur(6px)}
+  button:hover{background:rgba(60,56,50,.9)}
+  #hint{position:fixed;left:16px;bottom:24px;font-size:11.5px;opacity:.6;text-align:left;line-height:1.5}
+  #map{position:fixed;right:16px;bottom:16px;width:170px;height:240px;border-radius:12px;
+       background:rgba(18,16,14,.72);border:1px solid rgba(255,255,255,.16);backdrop-filter:blur(6px)}
+  #start{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;
+    background:rgba(15,14,13,.72);cursor:pointer;z-index:5}
+  #start .big{font-size:20px;font-weight:700}#start .s{font-size:13px;opacity:.7;margin-top:8px;text-align:center;line-height:1.6}
+  /* ---- interactive tablet UI ---- */
+  #useHint{position:fixed;left:50%;bottom:130px;transform:translateX(-50%);font-size:13px;font-weight:600;
+    background:rgba(231,180,94,.14);border:1px solid rgba(231,180,94,.45);color:#f0e2c8;padding:8px 16px;
+    border-radius:20px;display:none;backdrop-filter:blur(6px);z-index:4}
+  #tabui{position:fixed;right:36px;top:50%;transform:translateY(-50%);width:320px;height:580px;border-radius:26px;
+    display:none;flex-direction:column;overflow:hidden;z-index:6;
+    background:linear-gradient(168deg,#121517,#0d0f11 55%,#101315);border:1px solid rgba(255,255,255,.12);
+    box-shadow:0 0 0 9px #0b0b0a,0 0 0 10px rgba(255,255,255,.06),0 30px 80px rgba(0,0,0,.7)}
+  .tb-head{display:flex;justify-content:space-between;align-items:center;padding:16px 18px 8px;
+    font-size:10.5px;letter-spacing:.28em;color:rgba(243,239,233,.35);font-weight:600}
+  #tabX{background:none;border:none;color:rgba(243,239,233,.5);font-size:15px;cursor:pointer;padding:2px 6px;font-family:inherit}
+  #tbody{flex:1;overflow-y:auto;padding:6px 16px;display:flex;flex-direction:column;gap:8px}
+  #tchips{padding:12px 14px 8px;display:flex;gap:8px;flex-wrap:wrap}
+  #tinrow{display:flex;gap:8px;padding:0 14px 16px}
+  #tinput{flex:1;min-width:0;font-family:inherit;font-size:12.5px;padding:10px 12px;border-radius:14px;
+    border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:#f3efe9}
+  #tinput::placeholder{color:rgba(243,239,233,.35)}
+  #tsend{font-family:inherit;font-size:14px;padding:0 14px;border-radius:14px;cursor:pointer;
+    border:1px solid rgba(231,180,94,.45);background:rgba(231,180,94,.12);color:#f0e2c8;font-weight:700}
+  .tchip{font-size:12px;padding:9px 13px;border-radius:20px;border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.04);color:#f3efe9;cursor:pointer;font-family:inherit}
+  .tchip.gold{border-color:rgba(231,180,94,.5);background:rgba(231,180,94,.12);color:#f0e2c8;font-weight:600}
+  .tmsg{max-width:88%;font-size:12.5px;line-height:1.5;padding:9px 12px;border-radius:14px}
+  .tmsg.ai{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);align-self:flex-start;border-top-left-radius:5px}
+  .tmsg.me{background:rgba(231,180,94,.12);border:1px solid rgba(231,180,94,.25);align-self:flex-end;color:#f0e2c8;border-top-right-radius:5px}
+  .tcard{display:flex;gap:10px;align-items:center;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);
+    border-radius:12px;padding:9px 11px;cursor:pointer}
+  .tcard.sel{border-color:rgba(231,180,94,.6)}
+  .tcard .tsw{width:38px;height:48px;border-radius:7px;flex:none}
+  .tcard b{display:block;font-size:12px;font-weight:600}
+  .tcard i{display:block;font-style:normal;font-size:10px;color:rgba(243,239,233,.5);margin-top:2px;line-height:1.4}
+  .tcard u{display:block;text-decoration:none;font-size:9.5px;color:rgba(243,239,233,.35);margin-top:2px}
+  .tcenter{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:340px}
+  .tico{font-size:24px;color:#E7B45E;width:62px;height:62px;border:2px solid rgba(231,180,94,.4);border-radius:50%;
+    display:flex;align-items:center;justify-content:center;margin-bottom:16px}
+  .tico.glow{box-shadow:0 0 30px rgba(231,180,94,.4);border-color:rgba(231,180,94,.7)}
+  .tbig{font-size:17px;font-weight:700}
+  .tsub{font-size:12px;color:rgba(243,239,233,.55);margin-top:8px;line-height:1.6}
+  .tring{width:58px;height:58px;border-radius:50%;border:2px solid rgba(231,180,94,.25);border-top-color:#E7B45E;
+    animation:tspin 1.4s linear infinite;margin-bottom:16px}
+  @keyframes tspin{to{transform:rotate(360deg)}}
+  .tsum{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:12px;padding:11px 13px;font-size:12px}
+  .tsum>div{display:flex;justify-content:space-between;margin-bottom:6px}
+  .tsum .tt{margin:0;padding-top:6px;border-top:1px solid rgba(255,255,255,.09);font-weight:700}
+  /* ---- Shop Glass HUD ---- */
+  #hud{position:fixed;inset:0;pointer-events:none;display:none;z-index:3;
+    box-shadow:inset 0 0 130px rgba(0,0,0,.5);border-radius:34px}
+  #hudPill{position:fixed;top:18px;right:200px;z-index:4;display:none;font-size:11.5px;letter-spacing:.08em;
+    color:#f0e2c8;background:rgba(231,180,94,.12);border:1px solid rgba(231,180,94,.4);
+    padding:7px 14px;border-radius:18px;backdrop-filter:blur(6px);pointer-events:none}
+  /* 손목 워치 화면 (좌하단) */
+  #arCard{position:fixed;left:20px;bottom:104px;z-index:4;display:none;width:225px;
+    background:linear-gradient(170deg,#101214,#0b0d0f);border:3px solid #26282a;border-radius:30px;
+    padding:14px 16px;box-shadow:0 0 0 2px #060606,0 16px 46px rgba(0,0,0,.6);pointer-events:none}
+  #arCard .wh{font-size:9px;letter-spacing:.24em;color:rgba(243,239,233,.35);margin-bottom:6px}
+  #arCard .an{font-size:14px;font-weight:700}
+  #arCard .ap{font-size:12px;color:#E7B45E;margin-top:2px}
+  #arCard .ar{font-size:11px;color:rgba(243,239,233,.62);margin-top:6px;line-height:1.55}
+  #arCard .at{margin-top:9px;font-size:11px;color:#f0e2c8;border-top:1px solid rgba(255,255,255,.1);padding-top:8px}
+  #arCard .aw{margin-top:6px;font-size:11px;color:#E7B45E;min-height:14px}
+  #arCard .gd{margin-top:8px;font-size:13.5px;font-weight:700;color:#E7B45E;line-height:1.4}
+  #nfcHint{position:fixed;left:50%;bottom:172px;transform:translateX(-50%);font-size:13px;font-weight:600;
+    background:rgba(231,180,94,.14);border:1px solid rgba(231,180,94,.45);color:#f0e2c8;padding:8px 16px;
+    border-radius:20px;display:none;backdrop-filter:blur(6px);z-index:4}
+  #toast{position:fixed;left:50%;top:74px;transform:translateX(-50%);z-index:7;font-size:13px;font-weight:600;
+    background:rgba(20,18,16,.82);border:1px solid rgba(231,180,94,.4);color:#f0e2c8;padding:10px 18px;
+    border-radius:22px;opacity:0;transition:opacity .35s;backdrop-filter:blur(8px);white-space:nowrap;pointer-events:none}
+</style>
+</head>
+<body>
+<a href="/ui/" style="position:fixed;top:16px;left:16px;z-index:9999;padding:11px 18px;border-radius:12px;
+  border:1px solid rgba(231,180,94,.5);background:rgba(12,12,10,.72);backdrop-filter:blur(8px);
+  color:#f4e6c9;font:600 15px/1 'Pretendard','Apple SD Gothic Neo',sans-serif;letter-spacing:.04em;
+  text-decoration:none">← FIT STAGE 홈</a>
+<canvas id="c"></canvas>
+<div class="ui"><div class="title">FIT STAGE · 1인칭 워크스루 <span style="opacity:.5;font-weight:400">v16</span></div><div class="sub">백화점 플로어 → 피팅룸 → STAFF 복도 → 창고 · 전동 레일 딜리버리</div></div>
+<div id="cap"></div>
+<div class="bar">
+  <button id="play">▶ 워크스루 재생</button>
+  <button id="deliver">✦ 딜리버리 팔로우캠</button>
+</div>
+<div id="hint">클릭 후 마우스=시선 · WASD=이동 · Shift=빠르게<br/>옷 가까이에서 <b>T</b>=NFC 스캔(워치에 정보) · <b>F</b>=입어보기(피팅룸 전송)<br/>피팅룸 태블릿 앞 <b>E</b>=조작 (워치 태그로 세션 이어짐)</div>
+<canvas id="map"></canvas>
+<div id="useHint">E — 태블릿 사용하기</div>
+<div id="tabui">
+  <div class="tb-head"><span>F I T&nbsp;&nbsp;S T A G E · ROOM 01</span><button id="tabX">✕</button></div>
+  <div id="tbody"></div>
+  <div id="tchips"></div>
+  <div id="tinrow"><input id="tinput" placeholder="말씀하시거나, 위 선택지를 눌러 주세요" autocomplete="off"/><button id="tsend">▸</button></div>
+</div>
+<div id="hud"></div>
+<div id="hudPill">◉ SMART WATCH</div>
+<div id="arCard"></div>
+<div id="nfcHint">T — NFC 태그 스캔</div>
+<div id="toast"></div>
+<div id="start"><div class="big">클릭해서 입장</div><div class="s">입구에서 스마트 워치를 수령한 상태로 시작합니다<br/>옷 가까이에서 <b>T</b>=NFC 태그 스캔(워치에 정보) · <b>F</b>=입어보기(피팅룸 전송)<br/>마우스=시선 · WASD=이동 · STAFF 복도로 창고까지 입장 가능</div></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="/ui/fitstage.js"></script>
+<script>
+/* ===== 백엔드 통합: 세션·카탈로그·SSE (미러/워치와 세션 공유) ===== */
+const FS = window.FitStage;
+const TYPE_PID = { jacket:'p_1001', tee:'p_1013', pants:'p_1003', coat:'p_1004' };
+let FS_SID = null, FS_CAT = {};
+function fsProduct(type){ return FS_CAT[TYPE_PID[type]] || null; }
+async function fsInit(){
+  try{
+    const cat = await FS.api('/catalog/products?limit=100');
+    (cat.items||[]).forEach(p=>FS_CAT[p.productId]=p);
+    const s = await FS.ensureSession(); FS_SID = s.sessionId;
+    FS.subscribe(FS_SID, { 'wardrobe.ready': ()=>{ if(typeof tabOnReady==='function') tabOnReady(); } });
+  }catch(e){ console.warn('FIT STAGE 백엔드 연결 실패:', e && (e.message||e)); }
+}
+
+const sm=x=>{x=Math.max(0,Math.min(1,x));return x*x*(3-2*x);};
+const scene=new THREE.Scene();
+scene.background=new THREE.Color(0x0c0b0a);
+scene.fog=new THREE.Fog(0x0c0b0a,12,30);
+const camera=new THREE.PerspectiveCamera(55,innerWidth/innerHeight,0.02,140);
+camera.rotation.order='YXZ';
+let yaw=Math.PI,pitch=0;
+camera.position.set(0,1.55,8.6);
+const renderer=new THREE.WebGLRenderer({canvas:c,antialias:true});
+renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.outputEncoding=THREE.sRGBEncoding;
+
+/* ---------- materials ---------- */
+const M={};
+const DS=THREE.DoubleSide;
+M.wall =new THREE.MeshStandardMaterial({color:0x070606,roughness:0.95,side:DS});
+M.storeWall=new THREE.MeshStandardMaterial({color:0x050505,roughness:0.92,side:DS});
+M.roomFloor=new THREE.MeshStandardMaterial({color:0x0d0c0a,roughness:0.75});
+M.boh  =new THREE.MeshStandardMaterial({color:0x4e5254,roughness:0.95,side:DS});
+M.bohFloor=new THREE.MeshStandardMaterial({color:0x3f4344,roughness:0.9,side:DS});
+M.ceil =new THREE.MeshStandardMaterial({color:0x030303,roughness:1,side:DS});
+M.char =new THREE.MeshStandardMaterial({color:0x0c0b0a,roughness:0.9,side:DS});
+M.brass=new THREE.MeshStandardMaterial({color:0xB08D57,metalness:0.85,roughness:0.35});
+M.metal=new THREE.MeshStandardMaterial({color:0x6b6f72,metalness:0.7,roughness:0.4,side:DS});
+M.bench=new THREE.MeshStandardMaterial({color:0x2b2723,roughness:0.8});
+M.door =new THREE.MeshStandardMaterial({color:0x0f0e0d,roughness:0.55,metalness:0.25,side:DS});
+M.led  =new THREE.MeshStandardMaterial({color:0x111111,emissive:0xE7B45E,emissiveIntensity:0});
+M.strip=new THREE.MeshStandardMaterial({color:0x111111,emissive:0xffe6c2,emissiveIntensity:1.6});
+M.coolStrip=new THREE.MeshStandardMaterial({color:0x111111,emissive:0xdfe8ee,emissiveIntensity:1.0});
+M.glass=new THREE.MeshStandardMaterial({color:0xcfd8dd,metalness:0.2,roughness:0.08,transparent:true,opacity:0.22});
+M.plinth=new THREE.MeshStandardMaterial({color:0x0f0e0c,roughness:0.85});
+M.manne=new THREE.MeshStandardMaterial({color:0xE9E2D5,roughness:0.9});
+M.cardbrd=new THREE.MeshStandardMaterial({color:0x8a6f4d,roughness:1});
+const GAR=[0xC19A6B,0x8B5A2B,0xE8DFCE,0x33312E,0x6E2B36,0x5B6650,0xA6743F,0x9C8AA5];
+function gmat(i){i=Math.abs(Math.floor(i))%GAR.length;return new THREE.MeshStandardMaterial({color:GAR[i],roughness:0.8});}
+
+/* ---------- real garment shapes (extruded silhouettes, geometry cached) ---------- */
+const GEO={};
+function garmentGeo(type){
+ if(GEO[type])return GEO[type];
+ const s=new THREE.Shape();
+ if(type==='tee'){
+  s.moveTo(-0.05,0.80);s.lineTo(-0.25,0.75);s.lineTo(-0.36,0.50);s.lineTo(-0.26,0.44);s.lineTo(-0.20,0.55);
+  s.lineTo(-0.21,0.02);s.lineTo(0.21,0.02);s.lineTo(0.20,0.55);s.lineTo(0.26,0.44);s.lineTo(0.36,0.50);
+  s.lineTo(0.25,0.75);s.lineTo(0.05,0.80);s.quadraticCurveTo(0,0.72,-0.05,0.80);
+ }else if(type==='jacket'){
+  s.moveTo(-0.06,0.80);s.lineTo(-0.26,0.74);s.lineTo(-0.34,0.14);s.lineTo(-0.25,0.12);s.lineTo(-0.20,0.50);
+  s.lineTo(-0.22,0.00);s.lineTo(0.22,0.00);s.lineTo(0.20,0.50);s.lineTo(0.25,0.12);s.lineTo(0.34,0.14);
+  s.lineTo(0.26,0.74);s.lineTo(0.06,0.80);s.quadraticCurveTo(0,0.70,-0.06,0.80);
+ }else if(type==='coat'){
+  s.moveTo(-0.06,0.80);s.lineTo(-0.25,0.74);s.lineTo(-0.32,0.10);s.lineTo(-0.24,0.08);s.lineTo(-0.19,0.48);
+  s.lineTo(-0.26,-0.28);s.lineTo(0.26,-0.28);s.lineTo(0.19,0.48);s.lineTo(0.24,0.08);s.lineTo(0.32,0.10);
+  s.lineTo(0.25,0.74);s.lineTo(0.06,0.80);s.quadraticCurveTo(0,0.70,-0.06,0.80);
+ }else{ /* pants */
+  s.moveTo(-0.15,0.80);s.lineTo(0.15,0.80);s.lineTo(0.12,0.00);s.lineTo(0.035,0.00);s.lineTo(0.005,0.52);
+  s.lineTo(-0.005,0.52);s.lineTo(-0.035,0.00);s.lineTo(-0.12,0.00);s.closePath();
+ }
+ const geo=new THREE.ExtrudeGeometry(s,{depth:0.045,bevelEnabled:true,bevelThickness:0.008,bevelSize:0.008,bevelSegments:1});
+ geo.translate(0,0,-0.0225);
+ GEO[type]=geo;return geo;
+}
+/* hanger + garment, origin = top of hook (hangs from a rail/bar) */
+function makeGarment(type,ci,scale){
+ const g=new THREE.Group();
+ const hook=new THREE.Mesh(new THREE.TorusGeometry(0.035,0.006,8,14,Math.PI),M.metal);hook.position.y=-0.035;g.add(hook);
+ if(type==='pants'){
+  const bar=new THREE.Mesh(new THREE.BoxGeometry(0.34,0.015,0.015),M.metal);bar.position.y=-0.10;g.add(bar);
+  const st=new THREE.Mesh(new THREE.BoxGeometry(0.012,0.05,0.012),M.metal);st.position.y=-0.073;g.add(st);
+ }else{
+  const aL=new THREE.Mesh(new THREE.BoxGeometry(0.26,0.014,0.014),M.metal);aL.position.set(-0.12,-0.095,0);aL.rotation.z=0.28;g.add(aL);
+  const aR=new THREE.Mesh(new THREE.BoxGeometry(0.26,0.014,0.014),M.metal);aR.position.set(0.12,-0.095,0);aR.rotation.z=-0.28;g.add(aR);
+ }
+ const mesh=new THREE.Mesh(garmentGeo(type),gmat(ci));
+ mesh.position.y=(type==='pants'?-0.915:-0.92);
+ g.add(mesh);
+ g.scale.set(scale,scale,scale);
+ return g;
+}
+const GTYPES=['jacket','tee','pants','coat'];
+/* ---- Shop Glass: 스캔 대상 등록 + 메타 생성 ---- */
+const SCAN=[];
+function scanMeta(s){
+ const names={jacket:'스트럭처드 재킷',tee:'코튼 티셔츠',pants:'테이퍼드 팬츠',coat:'울 오버코트'};
+ const cols=['카멜','모카 브라운','아이보리','차콜','버건디','세이지','토프','더스티 라일락'];
+ const price={jacket:'₩698,000',tee:'₩128,000',pants:'₩428,000',coat:'₩1,180,000'};
+ const rev=['"한 치수 작게 나와요" 리뷰 다수','"어깨가 여유 있어요" 후기 많음','"실물 색이 더 예뻐요" 후기','"출근룩 기본템" 평점 4.8'];
+ const i=s.idx;
+ return {name:cols[s.ci]+' '+names[s.type],price:price[s.type],
+  rank:'매장 인기 #'+((i*7)%20+1)+(i%3===0?' · 온라인 베스트 ✓':''),
+  stock:'재고 S '+((i*3)%3)+' · M '+((i*5)%4+1)+' · L '+((i*2)%3+1),
+  color:'매장 '+((i%2)+2)+'컬러 · 온라인 +'+((i%3)+2)+'컬러',
+  rev:rev[i%4]};
+}
+/* 워치 소품 (수령 스탠드용) */
+function makeWatch(){
+ const g=new THREE.Group();
+ const band=new THREE.Mesh(new THREE.TorusGeometry(0.038,0.008,10,24),
+   new THREE.MeshStandardMaterial({color:0x2a2622,roughness:0.7}));
+ band.rotation.y=Math.PI/2;g.add(band);
+ const body=new THREE.Mesh(new THREE.BoxGeometry(0.055,0.02,0.065),M.metal);body.position.y=0.032;g.add(body);
+ const scr=new THREE.Mesh(new THREE.BoxGeometry(0.045,0.012,0.055),
+   new THREE.MeshStandardMaterial({color:0x0a0c0e,metalness:0.4,roughness:0.25,emissive:0x1c2c36,emissiveIntensity:0.55}));
+ scr.position.y=0.046;g.add(scr);
+ return g;
+}
+/* handbag with brass handle, origin = base */
+function makeBag(ci){
+ const g=new THREE.Group();const m=gmat(ci);
+ const body=new THREE.Mesh(new THREE.BoxGeometry(0.3,0.22,0.14),m);body.position.y=0.11;g.add(body);
+ const h=new THREE.Mesh(new THREE.TorusGeometry(0.085,0.012,8,18,Math.PI),M.brass);h.position.y=0.22;g.add(h);
+ const clasp=new THREE.Mesh(new THREE.BoxGeometry(0.05,0.04,0.02),M.brass);clasp.position.set(0,0.16,0.075);g.add(clasp);
+ return g;
+}
+
+/* glossy department-store tile floor */
+const tc=document.createElement('canvas');tc.width=tc.height=256;
+const tg=tc.getContext('2d');tg.fillStyle='#0b0a09';tg.fillRect(0,0,256,256);
+tg.strokeStyle='rgba(0,0,0,.7)';tg.lineWidth=2;tg.strokeRect(1,1,254,254);
+tg.strokeStyle='rgba(255,255,255,.05)';tg.strokeRect(5,5,246,246);
+const tileTex=new THREE.CanvasTexture(tc);tileTex.wrapS=tileTex.wrapT=THREE.RepeatWrapping;tileTex.repeat.set(10,8);
+M.storeFloor=new THREE.MeshStandardMaterial({map:tileTex,roughness:0.3,metalness:0.15});
+
+function box(w,h,d,mat,x,y,z){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);m.position.set(x,y,z);scene.add(m);return m;}
+function plane(w,h,mat,x,y,z,rx,ry){const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),mat);m.position.set(x,y,z);if(rx)m.rotation.x=rx;if(ry)m.rotation.y=ry;scene.add(m);return m;}
+function textPlane(txt,w,h,x,y,z,ry,fg,bg,fs){
+  const cv=document.createElement('canvas');cv.width=1024;cv.height=Math.round(1024*h/w);
+  const g=cv.getContext('2d');
+  if(bg){g.fillStyle=bg;g.fillRect(0,0,cv.width,cv.height);}else g.clearRect(0,0,cv.width,cv.height);
+  g.fillStyle=fg;g.font=`700 ${fs||120}px Pretendard, sans-serif`;g.textAlign='center';g.textBaseline='middle';
+  g.fillText(txt,cv.width/2,cv.height/2);
+  const tex=new THREE.CanvasTexture(cv);
+  const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({map:tex,transparent:true}));
+  m.position.set(x,y,z);if(ry)m.rotation.y=ry;scene.add(m);return m;
+}
+
+/* ================= FITTING ROOM (x -1.2..1.2, z -1.4..1.4, h3.0) ================= */
+plane(2.4,2.8,M.roomFloor,0,0.004,0,-Math.PI/2);
+plane(2.4,2.8,M.ceil,0,3.0,0,Math.PI/2);
+box(0.05,3.0,2.8,M.wall,-1.2,1.5,0);
+box(0.05,3.0,2.8,M.wall,1.2,1.5,0);
+box(0.45,0.45,1.0,M.bench,0.95,0.225,0); box(0.45,0.04,1.0,M.brass,0.95,0.47,0);
+box(0.6,3.0,0.05,M.wall,-0.9,1.5,-1.4); box(0.6,3.0,0.05,M.wall,0.9,1.5,-1.4); box(1.2,0.8,0.05,M.wall,0,2.6,-1.4);
+box(0.75,3.0,0.05,M.wall,-0.825,1.5,1.4); box(0.75,3.0,0.05,M.wall,0.825,1.5,1.4); box(1.7,0.8,0.05,M.wall,0,2.6,1.4);
+/* 프론트 프라이버시 도어 — 접근 시 자동 개방 (슬라이딩 양문) */
+const fDL=box(0.47,2.2,0.04,M.door,-0.235,1.1,1.43);
+const fDR=box(0.47,2.2,0.04,M.door,0.235,1.1,1.43);
+box(1.0,0.03,0.1,M.brass,0,2.22,1.43);  /* 도어 상부 레일 */
+let fDoorK=0;
+/* wardrobe recess */
+box(0.05,2.2,0.5,M.char,-0.6,1.1,-1.65); box(0.05,2.2,0.5,M.char,0.6,1.1,-1.65); box(1.2,0.06,0.5,M.char,0,2.22,-1.65);
+const led=box(1.1,0.05,0.04,M.led,0,2.14,-1.5);
+const dL=box(0.6,2.2,0.04,M.door,-0.3,1.1,-1.38), dR=box(0.6,2.2,0.04,M.door,0.3,1.1,-1.38);   // ② customer
+const sDL=box(0.6,2.2,0.04,M.metal,-0.3,1.1,-1.88), sDR=box(0.6,2.2,0.04,M.metal,0.3,1.1,-1.88); // ① service
+textPlane('01',0.24,0.24,-0.72,2.0,1.43,0,'#8a8073',null,140);
+
+/* ---------- SMART MIRROR (real UI) ---------- */
+const mcv=document.createElement('canvas');mcv.width=512;mcv.height=1024;
+const mg=mcv.getContext('2d');
+const mirrorTex=new THREE.CanvasTexture(mcv);
+function rr(g,x,y,w,h,r){g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath();}
+const ITEMS=[
+ {c1:'#C19A6B',c2:'#8f6b41',n:'\uc2a4\ud2b8\ub7ed\ucc98\ub4dc \ud2b8\ub7ec\ucee4 \uc7ac\ud0b7',why:'\uc5b4\uae68\uc120\uc774 \ubd80\ub4dc\ub7ec\uc6cc \ub531\ub531\ud574 \ubcf4\uc774\uc9c0 \uc54a\uc544\uc694',s:'SIZE M \u00b7 \u20a9698,000'},
+ {c1:'#3a3835',c2:'#232120',n:'\ud14c\uc774\ud37c\ub4dc \uc6b8 \uc2ac\ub799\uc2a4',why:'\uc7ac\ud0b7\uacfc \ud1a4 \ub300\ube44\ub85c \uc815\ub3c8\ub41c \uc2e4\ub8e8\uc5e3',s:'SIZE M \u00b7 \u20a9428,000'},
+ {c1:'#EDE4D3',c2:'#cfc4ae',n:'\ucf54\ud2bc \ud3ec\ud50c\ub9b0 \uc154\uce20',why:'\uce7c\ub77c\uac00 \ub0ae\uc544 \ub125\ud0c0\uc774 \uc5c6\uc774\ub3c4 \uaca9\uc2dd\uc774 \uc11c\uc694',s:'SIZE L \u00b7 \u20a9258,000'}];
+let mirrorState='';
+function mBubble(g,lines,me,y){
+  g.font='400 23px Pretendard, sans-serif';
+  const w=Math.max(...lines.map(t=>g.measureText(t).width))+38, h=lines.length*32+24;
+  const x=me?512-38-w:38;
+  g.fillStyle=me?'rgba(231,180,94,.13)':'rgba(255,255,255,.05)';rr(g,x,y,w,h,16);g.fill();
+  g.strokeStyle=me?'rgba(231,180,94,.3)':'rgba(255,255,255,.09)';g.lineWidth=1.5;rr(g,x,y,w,h,16);g.stroke();
+  g.fillStyle=me?'#f0e2c8':'#f3efe9';
+  lines.forEach((t,i)=>g.fillText(t,x+19,y+36+i*32));
+  return y+h+14;
+}
+function mCard(g,it,y,sel){
+  g.fillStyle='rgba(255,255,255,.04)';rr(g,38,y,436,100,16);g.fill();
+  g.strokeStyle=sel?'rgba(231,180,94,.7)':'rgba(255,255,255,.1)';g.lineWidth=sel?2.5:1.5;
+  rr(g,38,y,436,100,16);g.stroke();
+  const gr=g.createLinearGradient(58,y+14,114,y+86);gr.addColorStop(0,it.c1);gr.addColorStop(1,it.c2);
+  g.fillStyle=gr;rr(g,58,y+14,56,72,10);g.fill();
+  g.fillStyle='#f3efe9';g.font='600 23px Pretendard, sans-serif';g.fillText(it.n,132,y+38);
+  g.fillStyle='rgba(243,239,233,.5)';g.font='400 17px Pretendard, sans-serif';g.fillText(it.why,132,y+64);
+  g.fillStyle='rgba(243,239,233,.35)';g.font='400 16px Pretendard, sans-serif';g.fillText(it.s,132,y+87);
+  return y+112;
+}
+function mPill(g,t,gold,y){
+  g.font='600 21px Pretendard, sans-serif';
+  const w=g.measureText(t).width+44,x=(512-w)/2;
+  g.fillStyle=gold?'rgba(231,180,94,.13)':'rgba(255,255,255,.05)';rr(g,x,y,w,46,23);g.fill();
+  g.strokeStyle=gold?'rgba(231,180,94,.5)':'rgba(255,255,255,.12)';g.lineWidth=1.5;rr(g,x,y,w,46,23);g.stroke();
+  g.fillStyle=gold?'#f0e2c8':'#f3efe9';g.fillText(t,x+22,y+31);
+  return y+58;
+}
+function mCenter(g,ico,big,subs,glow){
+  g.strokeStyle=glow?'rgba(231,180,94,.75)':'rgba(231,180,94,.4)';g.lineWidth=3;
+  g.beginPath();g.arc(256,340,54,0,7);g.stroke();
+  if(glow){g.strokeStyle='rgba(231,180,94,.18)';g.lineWidth=14;g.beginPath();g.arc(256,340,64,0,7);g.stroke();}
+  g.fillStyle='#E7B45E';g.font='400 44px Pretendard, sans-serif';g.textAlign='center';g.fillText(ico,256,356);
+  g.fillStyle='#f3efe9';g.font='700 40px Pretendard, sans-serif';g.fillText(big,256,470);
+  g.fillStyle='rgba(243,239,233,.55)';g.font='400 24px Pretendard, sans-serif';
+  subs.forEach((t,i)=>g.fillText(t,256,520+i*38));
+  g.textAlign='left';
+}
+function drawMirror(state){
+  const g=mg;
+  const bg=g.createLinearGradient(0,0,0,1024);bg.addColorStop(0,'#101416');bg.addColorStop(1,'#181d20');
+  g.fillStyle=bg;g.fillRect(0,0,512,1024);
+  g.fillStyle='rgba(255,255,255,.35)';g.font='600 21px Pretendard, sans-serif';g.textAlign='center';
+  g.fillText('F I T   S T A G E \u00b7 ROOM 01',256,58);
+  g.strokeStyle='rgba(255,255,255,.1)';g.beginPath();g.moveTo(50,84);g.lineTo(462,84);g.stroke();
+  g.textAlign='left';
+  let y=116;
+  if(state==='idle'){
+    mCenter(g,'\u2726','\uc5b4\uc11c \uc624\uc138\uc694',['\uc6cc\uce58\ub97c \ud0dc\ube14\ub9bf\uc5d0 \uac00\ubccd\uac8c \ub300\uba74','\uc138\uc158\uc774 \uc774 \ud654\uba74\uc73c\ub85c \uc774\uc5b4\uc9d1\ub2c8\ub2e4.']);
+    mPill(g,'\u2726 \uc6cc\uce58 \ud0dc\uadf8\ud558\uae30',true,880);
+  }
+  if(state==='recommend'){
+    y=mBubble(g,['\uc624\ub298\uc740 \uc5b4\ub5a4 \uc790\ub9ac\ub97c \uc704\ud55c \uc637\uc778\uac00\uc694?'],false,y);
+    y=mBubble(g,['\ub2e4\uc74c \uc8fc \uba74\uc811\uc778\ub370, \ub108\ubb34 \uc815\uc7a5','\uac19\uc9c0\ub294 \uc54a\uc558\uc73c\uba74 \ud574\uc694'],true,y);
+    y=mBubble(g,['\uaca9\uc2dd\uc740 \uac16\ucd94\ub418 \ubd80\ub4dc\ub7ec\uc6b4 \uc778\uc0c1 \u2014','\uc774 \uc138 \uac00\uc9c0\ub97c \uc900\ube44\ud574\ubd24\uc5b4\uc694.'],false,y);
+    ITEMS.forEach((it,i)=>{y=mCard(g,it,y,i===0);});
+    let py=Math.max(y+16,846);
+    py=mPill(g,'\ud2b8\ub7ec\ucee4 \uc7ac\ud0b7 \u2014 \ud55c \uce58\uc218 \ud06c\uac8c (L)',true,py);
+    mPill(g,'\uc624\ub298\uc740 \ub458\ub7ec\ub9cc \ubcfc\uac8c\uc694',false,py);
+  }
+  if(state==='preparing'){
+    g.strokeStyle='rgba(231,180,94,.25)';g.lineWidth=4;g.beginPath();g.arc(256,340,50,0,7);g.stroke();
+    g.strokeStyle='#E7B45E';g.beginPath();g.arc(256,340,50,-1.4,0.6);g.stroke();
+    g.fillStyle='#f3efe9';g.font='700 40px Pretendard, sans-serif';g.textAlign='center';g.fillText('\uc900\ube44 \uc911',256,470);
+    g.fillStyle='rgba(243,239,233,.55)';g.font='400 24px Pretendard, sans-serif';
+    g.fillText('\uc2a4\ud2b8\ub7ed\ucc98\ub4dc \ud2b8\ub7ec\ucee4 \uc7ac\ud0b7 \u00b7 L',256,520);
+    g.fillText('\ucc3d\uace0 \ucd9c\ubc1c \u2192 \ub808\uc77c \uc774\ub3d9 \u2192 \uc6cc\ub4dc\ub85c\ube0c \ub3c4\ucc29',256,558);
+    g.textAlign='left';
+    mPill(g,'\ubc29\uc5d0\uc11c \uc9c0\ucf1c\ubcf4\uae30 (\ucc3d \ub2eb\uae30)',false,880);
+  }
+  if(state==='ready'){
+    mCenter(g,'\u2726','\uc900\ube44 \uc644\ub8cc',['\ub4a4\ucabd \uc6cc\ub4dc\ub85c\ube0c\ub97c \uc5f4\uc5b4\ubcf4\uc138\uc694.','\ud2b8\ub7ec\ucee4 \uc7ac\ud0b7 \u00b7 L'],true);
+    let py=mPill(g,'\ub9c8\uc74c\uc5d0 \ub4e4\uc5b4\uc694 \u2014 \ud0b5',true,846);
+    mPill(g,'\ub2e4\ub978 \ucd94\ucc9c \ubcf4\uae30',false,py);
+  }
+  if(state==='keep'){
+    y=mBubble(g,['\ud0b5\ud558\uc2e0 \ubaa9\ub85d\uc774\uc5d0\uc694.'],false,y);
+    g.fillStyle='rgba(255,255,255,.04)';rr(g,38,y,436,120,16);g.fill();
+    g.strokeStyle='rgba(255,255,255,.1)';g.lineWidth=1.5;rr(g,38,y,436,120,16);g.stroke();
+    g.fillStyle='rgba(243,239,233,.6)';g.font='400 22px Pretendard, sans-serif';g.fillText('\ud2b8\ub7ec\ucee4 \uc7ac\ud0b7 \u00b7 L',60,y+40);
+    g.fillStyle='#f3efe9';g.textAlign='right';g.fillText('\u20a9698,000',452,y+40);g.textAlign='left';
+    g.strokeStyle='rgba(255,255,255,.09)';g.beginPath();g.moveTo(60,y+64);g.lineTo(452,y+64);g.stroke();
+    g.font='700 22px Pretendard, sans-serif';g.fillText('\ud569\uacc4',60,y+98);
+    g.fillStyle='#E7B45E';g.textAlign='right';g.fillText('\u20a9698,000',452,y+98);g.textAlign='left';
+    y+=134;
+    y=mBubble(g,['\uc9c0\uae08 \uacb0\uc81c\ud558\uc154\ub3c4 \ub418\uace0, \ud3f0\uc73c\ub85c \ubcf4\ub0b4\ub4dc\ub824','\uc9d1\uc5d0\uc11c \ud3b8\ud788 \uacb0\uc815\ud558\uc154\ub3c4 \uc88b\uc544\uc694.'],false,y);
+    let py=mPill(g,'\uc9c0\uae08 \uacb0\uc81c (\ub370\ubaa8)',true,846);
+    mPill(g,'\ud3f0\uc73c\ub85c \ubcf4\ub0b4\uae30',false,py);
+  }
+  if(state==='handoff'){
+    mCenter(g,'\u2726','\ud3f0\uc73c\ub85c \ubcf4\ub0b4\uc5c8\uc5b4\uc694',['\uc624\ub298\uc758 \ud0b5 \u00b7 \ud655\uc815 \ud54f L\uc774','\uc138\uc158\uc73c\ub85c \uc774\uc5b4\uc9d1\ub2c8\ub2e4.'],true);
+    mPill(g,'\ucc98\uc74c\uc73c\ub85c',false,880);
+  }
+  if(state==='done'){
+    mCenter(g,'\u2726','\uacb0\uc81c \uc644\ub8cc',['\uc1fc\ud551\ubc31\uc740 \ub098\uac00\uc2dc\ub294 \uae38\uc5d0','\uc900\ube44\ub418\uc5b4 \uc788\uc5b4\uc694.'],true);
+    mPill(g,'\ucc98\uc74c\uc73c\ub85c',false,880);
+  }
+  mirrorTex.needsUpdate=true;
+}
+function setMirror(s){if(s!==mirrorState){mirrorState=s;drawMirror(s);}}
+setMirror('idle');
+/* 실물 거울 (디스플레이 없음) — 큐브카메라 실반사 + 브라스 프레임 */
+box(0.05,2.16,1.06,M.brass,-1.19,1.25,0);
+const mirrorRT=new THREE.WebGLCubeRenderTarget(256);
+const mirrorCam=new THREE.CubeCamera(0.05,12,mirrorRT);
+mirrorCam.position.set(-0.95,1.3,0);scene.add(mirrorCam);
+const glass=new THREE.Mesh(new THREE.PlaneGeometry(0.96,2.06),
+  new THREE.MeshStandardMaterial({color:0xd8dde0,metalness:1.0,roughness:0.04,envMap:mirrorRT.texture}));
+glass.position.set(-1.155,1.25,0);glass.rotation.y=Math.PI/2;scene.add(glass);
+/* 월마운트 태블릿 (대형) — UI는 여기에 표시 */
+box(0.04,0.84,0.48,M.char,-1.19,1.35,0.78);
+const mirrorMesh=new THREE.Mesh(new THREE.PlaneGeometry(0.4,0.78),new THREE.MeshBasicMaterial({map:mirrorTex}));
+mirrorMesh.position.set(-1.165,1.35,0.78);mirrorMesh.rotation.y=Math.PI/2;scene.add(mirrorMesh);
+/* 태블릿 옆 NFC 태그 포인트 표시 */
+box(0.02,0.1,0.1,M.brass,-1.185,0.86,0.78);
+
+/* ================= STORE — department floor (x -6..6, z 1.4..9.8, h3.4) ================= */
+plane(12,8.4,M.storeFloor,0,0.001,5.6,-Math.PI/2);
+box(12,0.05,8.4,M.ceil,0,3.4,5.6);
+box(0.05,3.4,8.4,M.storeWall,-6,1.7,5.6); box(0.05,3.4,8.4,M.storeWall,6,1.7,5.6);
+box(4.8,3.4,0.05,M.storeWall,-3.6,1.7,9.8); box(4.8,3.4,0.05,M.storeWall,3.6,1.7,9.8); box(2.4,1.0,0.05,M.storeWall,0,2.9,9.8);
+/* front wall segments (store side of fitting block) with STAFF opening x 1.9..2.6 */
+box(4.8,3.4,0.05,M.storeWall,-3.6,1.7,1.4);
+box(0.7,3.4,0.05,M.storeWall,1.55,1.7,1.4);
+box(3.4,3.4,0.05,M.storeWall,4.3,1.7,1.4);
+box(0.7,1.2,0.05,M.storeWall,2.25,2.8,1.4);
+box(12,0.5,0.05,M.storeWall,0,3.2,1.4);
+/* corridor walls store→BOH */
+box(0.05,3.0,3.3,M.boh,1.85,1.5,-0.25); box(0.05,3.0,3.3,M.boh,2.65,1.5,-0.25);
+plane(0.8,3.35,M.bohFloor,2.25,0.002,-0.25,-Math.PI/2);
+box(0.8,0.05,3.3,M.ceil,2.25,3.0,-0.25);
+textPlane('STAFF ONLY',0.72,0.2,2.25,2.32,1.43,0,'#8a8073',null,90);
+/* dummy fitting rooms 02, 03 on front wall */
+[[-2.3,'02'],[-3.5,'03']].forEach(([x,n])=>{box(0.84,2.14,0.04,M.door,x,1.07,1.372);textPlane(n,0.2,0.2,x+0.55,2.0,1.43,0,'#8a8073',null,140);});
+/* FIT STAGE sign above fitting zone */
+textPlane('F I T   S T A G E',2.6,0.4,0,2.55,1.435,0,'#c9a86a',null,110);
+/* entrance */
+plane(2.2,1.0,M.char,0,0.006,9.1,-Math.PI/2);
+textPlane('MAISON',2.6,0.62,0,3.0,9.77,Math.PI,'#e8dfce',null,150);
+/* ceiling light strips */
+for(let z=2.6;z<9.4;z+=1.6){box(9,0.05,0.14,M.strip,0,3.36,z);}
+/* columns */
+[[-2.9,3.8],[2.9,3.8],[-2.9,7.2],[2.9,7.2]].forEach(([x,z])=>{box(0.5,3.4,0.5,M.storeWall,x,1.7,z);box(0.6,0.5,0.6,M.char,x,0.25,z);});
+/* clothing racks */
+function rack(x,z,rot){const g=new THREE.Group();g.position.set(x,0,z);g.rotation.y=rot||0;
+  const add=(w,h,d,mat,px,py,pz)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);m.position.set(px,py,pz);g.add(m);};
+  add(0.05,1.45,0.05,M.metal,-0.65,0.72,0);add(0.05,1.45,0.05,M.metal,0.65,0.72,0);
+  add(1.35,0.04,0.04,M.brass,0,1.46,0);
+  for(let i=0;i<8;i++){
+    const ti=(i+Math.abs((x+z)|0))%4, ci=(i+Math.abs((x*3+z)|0))%8;
+    const gm=makeGarment(GTYPES[ti],ci,0.72);
+    gm.position.set(-0.53+i*0.15,1.46,0);gm.rotation.y=Math.PI/2;
+    gm.userData.scanIdx=SCAN.length;
+    SCAN.push({idx:SCAN.length,g:gm,type:GTYPES[ti],ci:ci});
+    g.add(gm);}
+  scene.add(g);}
+rack(-2.4,3.2,0.12); rack(-4.6,4.4,0.5); rack(3.8,3.6,-0.3); rack(-2.2,6.6,0); rack(4.2,6.4,0.35); rack(-4.4,7.8,0.2); rack(3.6,8.6,-0.5);
+/* wall niches with bags (left wall) */
+for(let i=0;i<3;i++){box(0.8,0.55,0.34,M.char,-5.8,0.9+i*0.75,3.0+i*0.2);
+  const bg=makeBag(i+2);bg.position.set(-5.58,0.71+i*0.75,3.0+i*0.2);bg.rotation.y=Math.PI/2;scene.add(bg);}
+for(let i=0;i<3;i++){box(0.8,0.55,0.34,M.char,5.8,0.9+i*0.75,5.5);
+  const bg=makeBag(i+4);bg.position.set(5.58,0.71+i*0.75,5.5);bg.rotation.y=-Math.PI/2;scene.add(bg);}
+/* glass display tables + bags */
+[[ -0.9,4.6],[1.1,6.9],[-3.3,5.9]].forEach(([x,z],i)=>{
+  box(0.9,0.06,0.6,M.glass,x,0.78,z);
+  box(0.06,0.78,0.06,M.metal,x-0.38,0.39,z-0.22);box(0.06,0.78,0.06,M.metal,x+0.38,0.39,z-0.22);
+  box(0.06,0.78,0.06,M.metal,x-0.38,0.39,z+0.22);box(0.06,0.78,0.06,M.metal,x+0.38,0.39,z+0.22);
+  const bg=makeBag(i);bg.position.set(x,0.81,z);scene.add(bg);
+});
+/* mannequins */
+function mannequin(x,z,ci){const g=new THREE.Group();g.position.set(x,0,z);
+  const add=m=>{g.add(m);return m;};
+  const p=add(new THREE.Mesh(new THREE.BoxGeometry(0.55,0.12,0.55),M.plinth));p.position.y=0.06;
+  const leg=add(new THREE.Mesh(new THREE.CylinderGeometry(0.03,0.05,0.55,10),M.metal));leg.position.y=0.4;
+  const body=add(new THREE.Mesh(new THREE.CylinderGeometry(0.16,0.13,0.75,14),gmat(ci)));body.position.y=1.05;
+  const head=add(new THREE.Mesh(new THREE.SphereGeometry(0.11,14,12),M.manne));head.position.y=1.62;
+  scene.add(g);}
+mannequin(-1.5,5.4,0);mannequin(1.7,4.2,3);mannequin(-4.8,6.6,4);mannequin(4.6,5.0,1);
+/* cashier */
+box(1.6,0.95,0.55,M.char,4.6,0.475,8.6);box(1.7,0.06,0.65,M.brass,4.6,0.98,8.6);
+/* 스마트 워치 수령 스탠드 (입구) */
+box(0.7,1.0,0.45,M.char,-1.7,0.5,8.7);
+box(0.8,0.05,0.55,M.brass,-1.7,1.02,8.7);
+const ew1=makeWatch();ew1.position.set(-1.85,1.06,8.7);scene.add(ew1);
+const ew2=makeWatch();ew2.position.set(-1.55,1.06,8.7);scene.add(ew2);
+textPlane('SMART WATCH 수령',1.15,0.24,-1.7,1.5,8.72,Math.PI,'#c9a86a',null,80);
+
+/* ================= BACK AREA — BOH + walkable warehouse (x -3.2..3.2, z -7.6..-1.9, h3.0) ================= */
+plane(6.4,5.7,M.bohFloor,0,0.001,-4.75,-Math.PI/2);
+box(6.4,0.05,5.7,M.boh,0,3.0,-4.75);
+box(0.05,3.0,5.7,M.boh,-3.2,1.5,-4.75); box(0.05,3.0,5.7,M.boh,3.2,1.5,-4.75);
+box(6.4,3.0,0.05,M.boh,0,1.5,-7.6);
+/* front cap z=-1.9 with 2 openings: wardrobe service x -0.6..0.6, staff corridor x 1.85..2.65 */
+box(2.5,3.0,0.05,M.boh,-1.85,1.5,-1.9);
+box(1.25,3.0,0.05,M.boh,1.225,1.5,-1.9);
+box(0.55,3.0,0.05,M.boh,2.925,1.5,-1.9);
+box(1.2,0.8,0.05,M.boh,0,2.6,-1.9);
+box(0.8,0.8,0.05,M.boh,2.25,2.6,-1.9);
+textPlane('STOCK · 창고',2.2,0.5,0,2.3,-7.57,0,'#c9ccce',null,110);
+/* cool light strips */
+for(let z=-2.8;z>-7.4;z-=1.5){box(5.6,0.05,0.12,M.coolStrip,0,2.96,z);}
+/* warehouse racks (double-deck, dense) + cardboard stacks */
+function whRack(x,z){
+  box(2.6,0.05,0.5,M.metal,x,2.1,z);box(2.6,0.05,0.5,M.metal,x,1.02,z);
+  box(0.06,2.2,0.5,M.metal,x-1.3,1.1,z);box(0.06,2.2,0.5,M.metal,x+1.3,1.1,z);
+  for(let i=0;i<14;i++){
+    const a=makeGarment(GTYPES[i%4],i+Math.abs(z|0),0.6);a.position.set(x-1.1+i*0.17,2.08,z);a.rotation.y=Math.PI/2;scene.add(a);
+    const b=makeGarment(GTYPES[(i+2)%4],i+3+Math.abs(z|0),0.6);b.position.set(x-1.1+i*0.17,1.0,z);b.rotation.y=Math.PI/2;scene.add(b);
+  }
+}
+whRack(-1.6,-3.6); whRack(-1.6,-4.9); whRack(-1.6,-6.2); whRack(1.0,-6.9);
+[[2.6,-7.2],[2.2,-7.2],[2.6,-6.6]].forEach(([x,z],i)=>{box(0.5,0.4,0.5,M.cardbrd,x,0.2+((i%2)*0.42),z);});
+
+/* ================= MOTORIZED RAIL: warehouse → wardrobe ================= */
+const PATH=[[1.6,-6.9],[1.6,-2.45],[0,-2.45],[0,-1.6]];
+const SEGS=[];let TOTAL=0;
+for(let i=0;i<PATH.length-1;i++){const [x1,z1]=PATH[i],[x2,z2]=PATH[i+1];
+  const dx=x2-x1,dz=z2-z1,len=Math.hypot(dx,dz);
+  SEGS.push({x1,z1,dx,dz,len,acc:TOTAL});TOTAL+=len;}
+function pathPoint(d){d=Math.max(0,Math.min(TOTAL,d));
+  let s=SEGS[SEGS.length-1];
+  for(const seg of SEGS){if(d<=seg.acc+seg.len){s=seg;break;}}
+  const t=(d-s.acc)/s.len;
+  return {x:s.x1+s.dx*t,z:s.z1+s.dz*t,ang:Math.atan2(s.dx,s.dz)};}
+/* rail geometry + supports */
+SEGS.forEach(s=>{
+  const mx=s.x1+s.dx/2,mz=s.z1+s.dz/2;
+  if(Math.abs(s.dx)>Math.abs(s.dz)) box(s.len+0.06,0.05,0.07,M.metal,mx,2.1,mz);
+  else box(0.07,0.05,s.len+0.06,M.metal,mx,2.1,mz);
+  const n=Math.max(1,Math.round(s.len/1.4));
+  for(let i=0;i<=n;i++){const t=i/n;box(0.04,0.86,0.04,M.metal,s.x1+s.dx*t,2.56,s.z1+s.dz*t);}
+});
+/* carriage (trolley + hanger + garment) */
+const carriage=new THREE.Group();
+{const t=new THREE.Mesh(new THREE.BoxGeometry(0.16,0.1,0.22),M.metal);carriage.add(t);
+ const rod=new THREE.Mesh(new THREE.BoxGeometry(0.03,0.36,0.03),M.metal);rod.position.y=-0.22;carriage.add(rod);}
+let carGar=makeGarment('jacket',0,1.0);carGar.position.y=-0.40;carGar.rotation.y=Math.PI/2;carriage.add(carGar);
+/* 스캔한 그 옷으로 캐리지 옷 교체 */
+function setCarriageGarment(type,ci){
+  carriage.remove(carGar);
+  carGar=makeGarment(type,ci,1.0);
+  carGar.position.y=-0.40;carGar.rotation.y=Math.PI/2;carriage.add(carGar);
+}
+carriage.position.set(PATH[0][0],2.06,PATH[0][1]);
+scene.add(carriage);
+
+/* ================= LIGHTS ================= */
+scene.add(new THREE.HemisphereLight(0xffe9d0,0x090807,0.2));
+scene.add(new THREE.AmbientLight(0xffe0bd,0.1));
+const roomL=new THREE.PointLight(0xffd9a0,0.32,9);roomL.position.set(0,2.8,0.3);scene.add(roomL);
+const sL1=new THREE.PointLight(0xffdcae,0.32,16);sL1.position.set(0,3.2,4.2);scene.add(sL1);
+const sL2=new THREE.PointLight(0xffdcae,0.26,14);sL2.position.set(-3.4,3.1,7.0);scene.add(sL2);
+const sL3=new THREE.PointLight(0xffd6a3,0.26,14);sL3.position.set(3.4,3.1,6.2);scene.add(sL3);
+const sL4=new THREE.PointLight(0xffdcae,0.2,11);sL4.position.set(0,3.0,8.8);scene.add(sL4);
+/* wardrobe stage spotlight — always on, intensifies at reveal */
+const wardSpot=new THREE.SpotLight(0xE7B45E,0.6,8,Math.PI/5,0.45);
+wardSpot.position.set(0,2.9,-0.55);wardSpot.target.position.set(0,1.2,-1.68);
+scene.add(wardSpot);scene.add(wardSpot.target);
+const bohL1=new THREE.PointLight(0xd7dee2,0.5,14);bohL1.position.set(0,2.7,-3.4);scene.add(bohL1);
+const bohL2=new THREE.PointLight(0xd7dee2,0.45,14);bohL2.position.set(0,2.7,-6.2);scene.add(bohL2);
+const revealLight=new THREE.SpotLight(0xE7B45E,0,6,Math.PI/4,0.6);
+revealLight.position.set(0,2.3,-1.55);revealLight.target.position.set(0,1.2,-1.7);
+scene.add(revealLight);scene.add(revealLight.target);
+
+/* ================= DELIVERY state machine ================= */
+const dlv={active:false,t:0,d:0,tArr:-1,done:false,phase:0};
+function resetDelivery(){
+  dlv.active=false;dlv.t=0;dlv.d=0;dlv.tArr=-1;dlv.done=false;dlv.phase=0;
+  const p0=pathPoint(0);carriage.position.set(p0.x,2.06,p0.z);carriage.rotation.y=p0.ang;
+  sDL.position.x=-0.3;sDR.position.x=0.3;dL.position.x=-0.3;dR.position.x=0.3;
+  M.led.emissiveIntensity=0;M.led.emissive.setHex(0xE7B45E);
+  revealLight.intensity=0;revealLight.color.setHex(0xE7B45E);
+  if(typeof wardSpot!=='undefined')wardSpot.intensity=0.6;
+}
+function startDelivery(){resetDelivery();dlv.active=true;}
+function updateDelivery(dt){
+  if(!dlv.active)return;
+  dlv.t+=dt;
+  if(dlv.d<TOTAL){
+    dlv.d=Math.min(TOTAL,dlv.d+1.7*dt);
+    const p=pathPoint(dlv.d);carriage.position.set(p.x,2.06,p.z);carriage.rotation.y=p.ang;
+    const rem=TOTAL-dlv.d;
+    const k=sm((1.7-rem)/0.8);            // ① opens as carriage approaches
+    sDL.position.x=-0.3-0.6*k;sDR.position.x=0.3+0.6*k;
+    dlv.phase=0;
+    if(dlv.d>=TOTAL)dlv.tArr=dlv.t;
+  }else{
+    const u=dlv.t-dlv.tArr;
+    carriage.rotation.y=-sm(u/0.8)*Math.PI/2;   /* presentation turn — garment swivels to face the customer */
+    if(u<0.5){dlv.phase=1;}
+    const kk=1-sm((u-0.5)/0.7);           // ① closes
+    if(u>=0.5){sDL.position.x=-0.3-0.6*kk;sDR.position.x=0.3+0.6*kk;if(kk<=0)dlv.phase=2;}
+    const tL=u-1.2;                        // after ① fully closed
+    if(tL>0){
+      const a=sm(tL/0.9);
+      M.led.emissiveIntensity=a*2.4;revealLight.intensity=a*1.9;
+      wardSpot.intensity=0.6+a*1.8;
+      const w=sm((tL-0.9)/0.6);
+      const r=0.905+(1-0.905)*w,g2=0.706+(1-0.706)*w,b=0.368+(0.878-0.368)*w;
+      M.led.emissive.setRGB(r,g2,b);revealLight.color.setRGB(r,g2,b);
+      const c2=sm((tL-1.7)/1.0);           // ② opens
+      dL.position.x=-0.3-0.6*c2;dR.position.x=0.3+0.6*c2;
+      if(tL>1.7)setMirror('ready');
+      if(tL>3.2){dlv.done=true;dlv.phase=3;}
+    }
+  }
+}
+
+/* ================= CONTROLS / MODES ================= */
+const keys={};
+addEventListener('keydown',e=>{keys[e.code]=true;
+  if(e.code==='KeyE'&&!UI.open&&nearTab&&mode==='free')openUI();
+  if(e.code==='KeyT')tryScan();
+  if(e.code==='KeyF')trySend();
+  if(e.code==='Escape'&&UI.open)closeUI();});
+addEventListener('keyup',e=>keys[e.code]=false);
+const canvas=renderer.domElement;
+start.addEventListener('click',()=>{canvas.requestPointerLock();start.style.display='none';});
+canvas.addEventListener('click',()=>{
+  if(mode!=='free'||UI.open)return;
+  if(document.pointerLockElement&&nearTab){openUI();return;}
+  canvas.requestPointerLock();});
+addEventListener('mousemove',e=>{if(document.pointerLockElement===canvas&&mode==='free'){
+  yaw-=e.movementX*0.0022;pitch-=e.movementY*0.0022;pitch=Math.max(-1.2,Math.min(1.2,pitch));}});
+let mode='free';
+const cap=document.getElementById('cap');
+
+/* walkable zones: store, front door, room, staff corridor, back area */
+const RECTS=[[-5.7,5.7,1.5,9.5],[-0.4,0.4,1.2,1.6],[-1.0,1.0,-1.25,1.3],[1.95,2.55,-2.15,1.55],[-2.95,2.95,-7.3,-2.05]];
+const inRect=(x,z)=>RECTS.some(r=>x>=r[0]&&x<=r[1]&&z>=r[2]&&z<=r[3]);
+function move(dt){
+  if(UI.open)return;
+  camera.rotation.set(pitch,yaw,0);
+  const sp=(keys['ShiftLeft']||keys['ShiftRight']?2.9:1.5)*dt;
+  const f=new THREE.Vector3(0,0,-1).applyEuler(camera.rotation);f.y=0;f.normalize();
+  const r=new THREE.Vector3(1,0,0).applyEuler(camera.rotation);r.y=0;r.normalize();
+  let nx=camera.position.x,nz=camera.position.z;
+  const ox=nx,oz=nz;
+  if(keys['KeyW']||keys['ArrowUp']){nx+=f.x*sp;nz+=f.z*sp;}
+  if(keys['KeyS']||keys['ArrowDown']){nx-=f.x*sp;nz-=f.z*sp;}
+  if(keys['KeyA']||keys['ArrowLeft']){nx-=r.x*sp;nz-=r.z*sp;}
+  if(keys['KeyD']||keys['ArrowRight']){nx+=r.x*sp;nz+=r.z*sp;}
+  if(inRect(nx,nz)){camera.position.x=nx;camera.position.z=nz;}
+  else if(inRect(nx,oz)){camera.position.x=nx;}
+  else if(inRect(ox,nz)){camera.position.z=nz;}
+  camera.position.y=1.55;
+}
+
+/* ---- guided tour (customer POV) ---- */
+const KF=[
+ {t:0  ,p:[0,1.55,8.6],l:[0,1.5,1.4],cap:'입구에서 스마트 워치를 수령합니다'},
+ {t:4  ,p:[-0.4,1.55,5.2],l:[0,1.45,1.4],cap:'매장을 지나 피팅룸 존으로'},
+ {t:7.5,p:[0,1.55,2.4],l:[0,1.4,-1.4],cap:'FIT STAGE — 01번 룸'},
+ {t:10 ,p:[0,1.55,1.15],l:[0,1.4,-1.4],cap:'프라이버시 패널이 열립니다'},
+ {t:12.5,p:[0.15,1.5,0.5],l:[0,1.35,-1.4],cap:'입실 — 머무는 방'},
+ {t:15 ,p:[0.2,1.15,0.35],l:[-1.16,1.3,0.78],cap:'착석 — 태블릿이 추천을 시작합니다 (거울은 실물)'},
+ {t:18 ,p:[0.15,1.18,0.3],l:[-1.16,1.29,0.78],cap:'"이거 한 치수 크게"'},
+ {t:21 ,p:[0.1,1.2,0.2],l:[0,1.4,-1.7],cap:'창고에서 옷이 오고 있어요 (고객은 기다리기만)'},
+ {t:26 ,p:[0,1.2,-0.05],l:[0,1.4,-1.75],cap:'✦ 리빌 — 워드로브가 열립니다'},
+ {t:29 ,p:[0,1.2,-0.5],l:[0,1.35,-1.8],cap:'꺼내서 입어보기'}
+];
+let ttime=0;
+play.addEventListener('click',()=>{if(document.pointerLockElement)document.exitPointerLock();
+  closeUI();UI.state='idle';mode='tour';ttime=0;resetDelivery();setMirror('idle');});
+function updateTour(dt){
+  ttime+=dt;const T=ttime;
+  if(T>=15&&mirrorState==='idle')setMirror('recommend');
+  if(T>=18){if(!dlv.active&&!dlv.done)startDelivery();if(mirrorState==='recommend')setMirror('preparing');}
+  let a=KF[0],b=KF[KF.length-1];
+  for(let i=0;i<KF.length-1;i++){if(T>=KF[i].t&&T<KF[i+1].t){a=KF[i];b=KF[i+1];break;}}
+  if(T>=KF[KF.length-1].t)a=b=KF[KF.length-1];
+  const span=Math.max(b.t-a.t,0.001);const k=sm((T-a.t)/span);
+  camera.position.set(a.p[0]+(b.p[0]-a.p[0])*k,a.p[1]+(b.p[1]-a.p[1])*k,a.p[2]+(b.p[2]-a.p[2])*k);
+  camera.lookAt(a.l[0]+(b.l[0]-a.l[0])*k,a.l[1]+(b.l[1]-a.l[1])*k,a.l[2]+(b.l[2]-a.l[2])*k);
+  cap.textContent=a.cap;cap.style.opacity=1;
+  if(T>KF[KF.length-1].t+2.5){mode='free';cap.style.opacity=0;yaw=camera.rotation.y;pitch=camera.rotation.x;}
+}
+
+/* ---- delivery follow-cam (rides the rail behind the garment) ---- */
+deliver.addEventListener('click',()=>{if(document.pointerLockElement)document.exitPointerLock();
+  closeUI();UI.state='preparing';mode='delivery';setMirror('preparing');startDelivery();});
+function updateDeliveryCam(){
+  if(dlv.phase<2){
+    const back=pathPoint(Math.max(dlv.d-2.0,0));
+    camera.position.set(back.x,1.8,back.z);
+    camera.lookAt(carriage.position.x,1.45,carriage.position.z);
+    cap.textContent = dlv.d<0.4?'창고(BOH) — 요청 접수, 옷이 출발합니다'
+      : (TOTAL-dlv.d)>1.7?'전동 레일 주행 중 — 서비스 스파인'
+      : dlv.phase===0?'서비스 문 ① 개방 — 워드로브 진입'
+      : '문 ① 닫힘 — 에어락';
+  }else{
+    camera.position.set(0.35,1.35,0.75);
+    camera.lookAt(0,1.3,-1.65);
+    cap.textContent = dlv.done?'딜리버리 완료 — 고객이 꺼내기만 하면 됩니다 ✦'
+      : mirrorState==='ready'?'고객 문 ② 개방 ✦'
+      : '워드로브 점등 — 앰버에서 화이트로';
+  }
+  cap.style.opacity=1;
+  if(dlv.done&&dlv.t-dlv.tArr>5.5){mode='free';cap.style.opacity=0;yaw=camera.rotation.y;pitch=camera.rotation.x;}
+}
+
+/* ================= INTERACTIVE TABLET UI ================= */
+const UI={open:false,state:'idle'};
+let nearTab=false;
+const tabuiEl=document.getElementById('tabui'),tbodyEl=document.getElementById('tbody'),
+      tchipsEl=document.getElementById('tchips'),useHintEl=document.getElementById('useHint');
+function uiChip(t,fn,gold){const b=document.createElement('button');b.className='tchip'+(gold?' gold':'');
+  b.textContent=t;b.onclick=fn;tchipsEl.appendChild(b);}
+function uiGo(s){
+  UI.state=s;tchipsEl.innerHTML='';
+  if(s==='idle'){
+    tbodyEl.innerHTML='<div class="tcenter"><div class="tico">✦</div><div class="tbig">어서 오세요</div><div class="tsub">워치를 아래 NFC 패드에 가볍게 대면<br>매장에서의 세션이 이 화면으로 이어집니다.</div></div>';
+    uiChip('✦ 워치 태그하기',()=>uiGo('recommend'),true);
+  }
+  if(s==='recommend'){
+    tbodyEl.innerHTML=
+      (sentItem?'<div class="tmsg ai">매장에서 보신 '+sentItem+' — 워드로브로 미리 보내뒀어요.</div>':'')+
+      '<div class="tmsg ai">오늘은 어떤 자리를 위한 옷인가요?</div>'+
+      '<div class="tmsg me">다음 주 면접인데, 너무 정장 같지는 않았으면 해요</div>'+
+      '<div class="tmsg ai">격식은 갖추되 부드러운 인상 — 이 세 가지를 준비해봤어요.</div>'+
+      '<div class="tcard sel" id="tcFit"><span class="tsw" style="background:linear-gradient(160deg,#C19A6B,#8f6b41)"></span><span><b>스트럭처드 트러커 재킷</b><i>어깨선이 부드러워 딱딱해 보이지 않아요</i><u>SIZE M · ₩698,000</u></span></div>'+
+      '<div class="tcard"><span class="tsw" style="background:linear-gradient(160deg,#3a3835,#232120)"></span><span><b>테이퍼드 울 슬랙스</b><i>재킷과 톤 대비로 정돈된 실루엣</i><u>SIZE M · ₩428,000</u></span></div>'+
+      '<div class="tcard"><span class="tsw" style="background:linear-gradient(160deg,#EDE4D3,#cfc4ae)"></span><span><b>코튼 포플린 셔츠</b><i>칼라가 낮아 넥타이 없이도 격식이 서요</i><u>SIZE L · ₩258,000</u></span></div>';
+    const order=()=>{uiGo('preparing');resetDelivery();startDelivery();};
+    uiChip('트러커 재킷 — 한 치수 크게 (L)',order,true);
+    uiChip('오늘은 둘러만 볼게요',()=>closeUI());
+    document.getElementById('tcFit').onclick=order;
+  }
+  if(s==='preparing'){
+    tbodyEl.innerHTML='<div class="tcenter"><div class="tring"></div><div class="tbig">준비 중</div><div class="tsub">'+(sentItem||'스트럭처드 트러커 재킷')+' · L<br>창고 출발 → 레일 이동 → 워드로브 도착</div></div>';
+    uiChip('방에서 지켜보기 (창 닫기)',()=>closeUI());
+  }
+  if(s==='ready'){
+    tbodyEl.innerHTML='<div class="tcenter"><div class="tico glow">✦</div><div class="tbig">준비 완료</div><div class="tsub">뒤쪽 워드로브를 열어보세요.<br>'+(sentItem||'트러커 재킷')+' · L</div></div>';
+    uiChip('마음에 들어요 — 킵',()=>uiGo('keep'),true);
+    uiChip('다른 추천 보기',()=>{resetDelivery();uiGo('recommend');});
+  }
+  if(s==='keep'){
+    tbodyEl.innerHTML='<div class="tmsg ai">킵하신 목록이에요.</div>'+
+      '<div class="tsum"><div><span>트러커 재킷 · L</span><span>₩698,000</span></div><div class="tt"><span>합계</span><span>₩698,000</span></div></div>'+
+      '<div class="tmsg ai">지금 결제하셔도 되고, 폰으로 보내드려 집에서 편히 결정하셔도 좋아요.</div>';
+    uiChip('지금 결제 (데모)',()=>uiGo('done'),true);
+    uiChip('폰으로 보내기',()=>uiGo('handoff'));
+  }
+  if(s==='handoff'){
+    tbodyEl.innerHTML='<div class="tcenter"><div class="tico glow">✦</div><div class="tbig">폰으로 보냈어요</div><div class="tsub">오늘의 킵 · 확정 핏 L이 세션으로 이어집니다.<br><span style="opacity:.5">저장하지 않으면 퇴실 시 모두 삭제돼요.</span></div></div>';
+    uiChip('처음으로',()=>{resetDelivery();uiGo('idle');});
+  }
+  if(s==='done'){
+    tbodyEl.innerHTML='<div class="tcenter"><div class="tico glow">✦</div><div class="tbig">결제 완료</div><div class="tsub">쇼핑백은 나가시는 길에 준비되어 있어요.</div></div>';
+    uiChip('처음으로',()=>{resetDelivery();uiGo('idle');});
+  }
+  /* 3D 태블릿 화면도 같은 상태로 동기화 */
+  setMirror(s);
+}
+function openUI(){UI.open=true;tabuiEl.style.display='flex';
+  if(document.pointerLockElement)document.exitPointerLock();tabOpen();}
+function closeUI(){UI.open=false;tabuiEl.style.display='none';}
+document.getElementById('tabX').onclick=closeUI;
+
+/* ===== 태블릿 = 실제 LLM 컨시어지 (미러와 동일 백엔드·세션) ===== */
+let tabInit=false, tabBusy=false;
+const tinputEl=document.getElementById('tinput');
+function tabScroll(){tbodyEl.scrollTop=tbodyEl.scrollHeight;}
+function tabAddMsg(role,text){
+  const d=document.createElement('div');d.className='tmsg '+(role==='user'?'me':'ai');d.textContent=text;
+  tbodyEl.appendChild(d);tabScroll();
+}
+function tabAddCards(items){
+  (items||[]).forEach((it,i)=>{
+    const p=FS_CAT[it.productId]||{name:it.productId,price:0,color:'',sizes:[]};
+    const stock=(p.sizes||[]).map(s=>s.size+' '+(s.stock>0?s.stock:'품절')).join(' · ');
+    const d=document.createElement('div');d.className='tcard'+(i===0?' sel':'');
+    d.innerHTML='<span class="tsw" style="background:'+FS.grad(p.color)+'"></span>'
+      +'<span><b>'+p.name+'</b><i>'+(it.reason||'')+'</i>'
+      +'<u>SIZE '+it.size+' · '+FS.krw(p.price)+' · 재고 '+stock+'</u></span>';
+    d.onclick=()=>tabSend((i+1)+'번 입어볼게요');
+    tbodyEl.appendChild(d);
+  });
+  tabScroll();
+}
+function tabChips(list){
+  tchipsEl.innerHTML='';
+  (list||[]).forEach((c,i)=>uiChip(c,()=>tabSend(c),i===0));
+}
+function tabUi(a){
+  if(a.type==='SHOW_PRODUCTS')tabAddCards(a.items);
+  else if(a.type==='SHOW_CHIPS')tabChips(a.chips);
+  else if(a.type==='SHOW_DELIVERY_STATUS'){ if(!dlv.active&&!dlv.done){resetDelivery();startDelivery();} setMirror('preparing'); tabAddMsg('assistant','준비 중 — 곧 워드로브에 닿아요.'); }
+  else if(a.type==='SHOW_KEEP_LIST')tabAddMsg('assistant','킵에 담았어요 · 합계 '+FS.krw(a.total));
+  else if(a.type==='SHOW_CHECKOUT_RESULT')tabAddMsg('assistant','결제됐어요 · '+FS.krw(a.total));
+  else if(a.type==='SHOW_HANDOFF_QR')tabAddMsg('assistant','오늘의 세션을 폰으로 담아 드렸어요.');
+}
+async function tabSend(text){
+  text=(text||'').trim(); if(tabBusy||!text)return; tabBusy=true;
+  tinputEl.value=''; tabAddMsg('user',text); tchipsEl.innerHTML='';
+  if(!FS_SID){ tabAddMsg('assistant','세션을 연결하는 중이에요. 잠시 후 다시 시도해 주세요.'); tabBusy=false; return; }
+  const t=document.createElement('div');t.className='tmsg ai';t.textContent='✦ · · ·';tbodyEl.appendChild(t);tabScroll();
+  try{
+    const r=await FS.api('/sessions/'+FS_SID+'/messages',{method:'POST',body:JSON.stringify({text})});
+    t.remove();
+    (r.messages||[]).forEach(m=>tabAddMsg('assistant',m.text));
+    (r.uiActions||[]).forEach(tabUi);
+  }catch(e){ t.remove(); tabAddMsg('assistant', (e&&e.code==='LLM_UNAVAILABLE')?'다시 한 번 말씀해 주시겠어요?':'잠시 문제가 있었어요 — 다시 말씀해 주시겠어요?'); }
+  finally{ tabBusy=false; }
+}
+function tabOnReady(){ if(UI.open) tabAddMsg('assistant','준비됐어요 — 뒤쪽 워드로브를 열어 보세요.'); }
+function tabOpen(){
+  if(!tabInit){
+    tabInit=true; tbodyEl.innerHTML='';
+    tabAddMsg('assistant','어서 오세요. 어떤 옷을 찾으시나요?');
+    if(sentItem)tabAddMsg('assistant','매장에서 보신 '+sentItem+', 워드로브로 미리 보내뒀어요.');
+    tabChips(['다음 주 면접이에요','데이트 룩 보여 주세요','그냥 둘러볼게요']);
+  }
+}
+document.getElementById('tsend').onclick=()=>tabSend(tinputEl.value);
+tinputEl.addEventListener('keydown',e=>{ e.stopPropagation(); if(e.key==='Enter'){e.preventDefault();tabSend(tinputEl.value);} });
+fsInit();
+
+/* ================= SMART WATCH (NFC \uc2a4\uce94) ================= */
+let learned=0,sentItem=null,scanTarget=null,scanned=null,prevInRoom=false;
+const viewed=new Set();
+const hudPillEl=document.getElementById('hudPill'),arEl=document.getElementById('arCard'),
+      toastEl=document.getElementById('toast'),nfcEl=document.getElementById('nfcHint');
+let toastT=null;
+function toast(t){toastEl.textContent=t;toastEl.style.opacity=1;
+  clearTimeout(toastT);toastT=setTimeout(()=>toastEl.style.opacity=0,3000);}
+const gRay=new THREE.Raycaster();gRay.far=1.9;
+const RC={x:0,y:0};
+let SCANROOTS=null,scanTick=0;
+function tryScan(){
+  if(mode!=='free'||UI.open||!scanTarget)return;
+  scanned=scanTarget;
+  if(!viewed.has(scanned.idx)){viewed.add(scanned.idx);learned++;}
+  const p=fsProduct(scanned.type);
+  scanned.pid = p ? p.productId : null;
+  const m=scanMeta(scanned);
+  const name  = p ? p.name : m.name;
+  const price = p ? FS.krw(p.price) : m.price;
+  const stock = p ? ('\uc7ac\uace0 ' + p.sizes.map(s=>s.size+' '+(s.stock>0?s.stock+'\uac1c':'\ud488\uc808')).join(' \u00b7 ')) : m.stock;
+  const av    = p ? [ (p.color||'').toUpperCase(), (p.availability&&p.availability.store?'\ub9e4\uc7a5 \ud53d\uc5c5':''), (p.availability&&p.availability.online?'\uc628\ub77c\uc778 \uad6c\ub9e4':'') ].filter(Boolean).join(' \u00b7 ') : m.color;
+  const rev   = p ? (p.reviewSummary || m.rev) : m.rev;
+  arEl.innerHTML='<div class="wh">SMART WATCH \u00b7 NFC</div>'
+   +'<div class="an">'+name+'</div>'
+   +'<div class="ap">'+price+'</div>'
+   +'<div class="ar">'+stock+'<br>'+av+'<br>'+rev+'</div>'
+   +'<div class="at">F \u2014 \uc785\uc5b4\ubcf4\uae30 (\ud53c\ud305\ub8f8\uc73c\ub85c \uc804\uc1a1)</div>'
+   +'<div class="aw" id="awStat"></div>';
+  arEl.style.display='block';
+  toast('\ud0dc\uadf8 \uc2a4\uce94 \uc644\ub8cc \u2014 '+name);
+  if(FS_SID&&scanned.pid) FS.api('/sessions/'+FS_SID+'/scans',{method:'POST',body:JSON.stringify({productId:scanned.pid})}).catch(()=>{});
+}
+function trySend(){
+  if(mode!=='free'||UI.open||!scanned)return;
+  const p=fsProduct(scanned.type);
+  const name = p ? p.name : scanMeta(scanned).name;
+  sentItem=name;
+  setCarriageGarment(scanned.type,scanned.ci);
+  arEl.innerHTML='<div class="wh">SMART WATCH \u00b7 NFC</div>'
+   +'<div class="an">\uc785\uc5b4\ubcf4\uae30 \uc811\uc218 \u2713</div>'
+   +'<div class="gd">\u2192 \ud53c\ud305\ub8f8 01\ubc88\uc73c\ub85c \uac00\uc138\uc694</div>'
+   +'<div class="ar">'+name+'<br>\uc637\uc744 \uba3c\uc800 \ubcf4\ub0b4\ub4dc\ub9ac\uace0 \uc788\uc5b4\uc694</div>'
+   +'<div class="aw" id="awStat"></div>';
+  arEl.style.display='block';
+  UI.state='preparing';
+  resetDelivery();startDelivery();setMirror('preparing');
+  // \uc2e4\uc81c \ubc31\uc5d4\ub4dc \ub51c\ub9ac\ubc84\ub9ac (\ub370\uc774\ud130\u00b7\ud0c0 \ud654\uba74 \ub3d9\uae30\ud654) \u2014 3D \uc5f0\ucd9c\uc740 \ub85c\uceec \uc560\ub2c8\uba54\uc774\uc158 \uc720\uc9c0
+  if(FS_SID&&p){
+    const size=(p.sizes.find(s=>s.stock>0)||{}).size||'M';
+    FS.api('/sessions/'+FS_SID+'/deliveries',{method:'POST',body:JSON.stringify({productId:p.productId,size})})
+      .catch(e=>toast((e&&e.message)||'\uc804\uc1a1\ud560 \uc218 \uc5c6\uc5b4\uc694'));
+  }
+}
+function updateWatch(){
+  const active=mode==='free'&&!UI.open;
+  hudPillEl.style.display=active?'block':'none';
+  if(!active){nfcEl.style.display='none';return;}
+  hudPillEl.textContent='\u25c9 SMART WATCH \u00b7 \uc2a4\uce94 '+learned+(sentItem?' \u00b7 \uc804\uc1a1 1':'');
+  const p=camera.position;
+  const inRoom=p.x>-1.05&&p.x<1.05&&p.z>-1.3&&p.z<1.37;
+  if(inRoom&&!prevInRoom)toast('\uc6cc\uce58 \uc138\uc158 \uc5f0\uacb0 \u2014 \uc606 \ud0dc\ube14\ub9bf\uc774 \uc774\uc5b4\ubc1b\uc2b5\ub2c8\ub2e4');
+  prevInRoom=inRoom;
+  if(inRoom)arEl.style.display='none';
+  if(!SCANROOTS)SCANROOTS=SCAN.map(s=>s.g);
+  scanTick++;
+  if(scanTick%3===0){
+    gRay.setFromCamera(RC,camera);
+    const hits=gRay.intersectObjects(SCANROOTS,true);
+    let idx=-1;
+    if(hits.length){let o=hits[0].object;
+      while(o&&o.userData.scanIdx===undefined)o=o.parent;
+      if(o)idx=o.userData.scanIdx;}
+    scanTarget=idx>=0?SCAN[idx]:null;
+  }
+  nfcEl.style.display=scanTarget?'block':'none';
+  const st=document.getElementById('awStat');
+  if(st&&sentItem){
+    st.textContent=(mirrorState==='ready')?'\ud53c\ud305\ub8f8 01 \ub3c4\ucc29 \u2713':(dlv.active?'\ud53c\ud305\ub8f8 01\ub85c \uc774\ub3d9 \uc911\u2026':'');
+  }
+}
+/* 프론트 도어 자동 개폐 */
+function updateFrontDoor(dt){
+  const p=camera.position;
+  const near=Math.abs(p.x)<1.3 && p.z>0.15 && p.z<2.7;
+  const target=near?1:0;
+  fDoorK+=(target-fDoorK)*Math.min(dt*3.2,1);
+  const k=sm(fDoorK);
+  fDL.position.x=-0.235-0.52*k;
+  fDR.position.x= 0.235+0.52*k;
+}
+
+/* ================= MINIMAP (top-down, bottom-right) ================= */
+const mapC=document.getElementById('map');mapC.width=340;mapC.height=480;
+const mg2=mapC.getContext('2d');
+const MS=26,MOX=14,MOY=14;
+const mpx=x=>MOX+(x+6)*MS, mpz=z=>MOY+(z+7.6)*MS;
+const mapBG=document.createElement('canvas');mapBG.width=340;mapBG.height=480;
+(function drawMapBG(){
+  const g=mapBG.getContext('2d');
+  function zone(x1,z1,x2,z2,fill){g.fillStyle=fill;g.fillRect(mpx(x1),mpz(z1),(x2-x1)*MS,(z2-z1)*MS);
+    g.strokeStyle='rgba(255,255,255,.22)';g.lineWidth=1.5;g.strokeRect(mpx(x1),mpz(z1),(x2-x1)*MS,(z2-z1)*MS);}
+  zone(-3.2,-7.6,3.2,-1.9,'rgba(150,160,165,.28)');           // warehouse/BOH
+  zone(-6,1.4,6,9.8,'rgba(214,203,182,.28)');                 // store
+  zone(1.85,-1.9,2.65,1.4,'rgba(150,160,165,.30)');           // staff corridor
+  zone(-1.2,-1.4,1.2,1.4,'rgba(255,255,255,.40)');            // fitting room
+  zone(-0.6,-1.9,0.6,-1.4,'rgba(231,180,94,.55)');            // wardrobe
+  /* rail */
+  g.strokeStyle='rgba(231,180,94,.85)';g.lineWidth=3;g.beginPath();
+  PATH.forEach(([x,z],i)=>{i?g.lineTo(mpx(x),mpz(z)):g.moveTo(mpx(x),mpz(z));});g.stroke();
+  /* mirror */
+  g.strokeStyle='#7fb0c8';g.lineWidth=4;g.beginPath();g.moveTo(mpx(-1.2),mpz(-0.56));g.lineTo(mpx(-1.2),mpz(0.56));g.stroke();
+  /* front door gap */
+  g.strokeStyle='rgba(255,255,255,.75)';g.lineWidth=2;g.beginPath();g.moveTo(mpx(-0.44),mpz(1.4));g.lineTo(mpx(0.44),mpz(1.4));g.stroke();
+  /* labels */
+  g.fillStyle='rgba(255,255,255,.62)';g.font='600 20px Pretendard, sans-serif';g.textAlign='center';
+  g.fillText('창고 · BOH',mpx(0),mpz(-6.9));
+  g.fillText('피팅룸',mpx(0),mpz(0.4));
+  g.fillText('매장',mpx(0),mpz(8.9));
+  g.save();g.translate(mpx(2.25),mpz(0.1));g.rotate(-Math.PI/2);g.font='600 15px Pretendard, sans-serif';
+  g.fillStyle='rgba(255,255,255,.5)';g.fillText('STAFF',0,5);g.restore();
+})();
+const _fw=new THREE.Vector3();
+function drawMap(){
+  mg2.clearRect(0,0,340,480);
+  mg2.drawImage(mapBG,0,0);
+  /* delivery garment on rail */
+  mg2.fillStyle='#E7B45E';mg2.beginPath();
+  mg2.arc(mpx(carriage.position.x),mpz(carriage.position.z),6,0,7);mg2.fill();
+  mg2.strokeStyle='rgba(0,0,0,.4)';mg2.lineWidth=1.5;mg2.stroke();
+  /* player */
+  _fw.set(0,0,-1).applyQuaternion(camera.quaternion);
+  const ang=Math.atan2(_fw.z,_fw.x);
+  const px=mpx(camera.position.x),pz=mpz(camera.position.z);
+  mg2.save();mg2.translate(px,pz);mg2.rotate(ang);
+  mg2.beginPath();mg2.moveTo(13,0);mg2.lineTo(-8,7.5);mg2.lineTo(-8,-7.5);mg2.closePath();
+  mg2.fillStyle='#ffffff';mg2.fill();mg2.strokeStyle='rgba(0,0,0,.5)';mg2.lineWidth=2;mg2.stroke();
+  mg2.restore();
+}
+
+/* ================= LOOP ================= */
+let last=performance.now(),frameN=0;
+function loop(now){
+  const dt=Math.min((now-last)/1000,0.05);last=now;frameN++;
+  /* 거울 반사 갱신 — 방 근처에 있을 때만, 6프레임마다 (성능) */
+  if(frameN%6===0 && camera.position.z<3.0 && camera.position.z>-2.5){
+    glass.visible=false;mirrorCam.update(renderer,scene);glass.visible=true;
+  }
+  if(mode==='tour')updateTour(dt);
+  else if(mode==='delivery'){updateDeliveryCam();}
+  else move(dt);
+  updateDelivery(dt);
+  /* 태블릿 근접 감지 + 상태 동기화 + 숍 글래스 */
+  {const dxT=camera.position.x+1.165,dzT=camera.position.z-0.78;
+   nearTab=(mode==='free')&&(dxT*dxT+dzT*dzT<2.6);
+   useHintEl.style.display=(nearTab&&!UI.open)?'block':'none';
+   updateWatch();updateFrontDoor(dt);}
+  renderer.render(scene,camera);
+  drawMap();
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);});
+</script>
+</body>
+</html>

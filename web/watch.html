@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>SHOP WATCH — FIT STAGE</title>
+<style>
+:root{--bg:#0b0a09;--ink:#F3EFE9;--sub:rgba(243,239,233,.58);--faint:rgba(243,239,233,.32);
+ --amber:#E7B45E;--amber2:#c9a86a;--line:rgba(255,255,255,.1)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);min-height:100vh;
+ font-family:'Pretendard','Apple SD Gothic Neo','Noto Sans KR',sans-serif;
+ display:flex;flex-direction:column;align-items:center;padding:24px 16px 40px}
+h1{font-size:22px;font-weight:700;letter-spacing:.22em}
+.top{text-align:center;margin-bottom:22px}
+.top .sub1{font-size:13px;letter-spacing:.18em;color:var(--faint);margin-top:7px}
+.top .d{font-size:15px;color:var(--sub);margin-top:10px;line-height:1.6}
+.tools{display:flex;gap:10px;justify-content:center;margin-top:14px}
+.tbtn{font-size:15px;padding:11px 18px;border-radius:12px;border:1px solid var(--line);
+  background:rgba(255,255,255,.04);color:var(--ink);cursor:pointer;font-family:inherit;text-decoration:none;transition:.2s}
+.tbtn:hover{border-color:rgba(231,180,94,.5);color:#f0e2c8}
+.tbtn.gold{border-color:rgba(231,180,94,.5);background:rgba(231,180,94,.12);color:#f4e6c9;font-weight:700}
+.stage{display:flex;gap:40px;align-items:flex-start;justify-content:center;flex-wrap:wrap}
+
+/* 옷 태그 패널 */
+.rack{width:320px}
+.rack h2,.side h2{font-size:14px;letter-spacing:.14em;color:var(--faint);font-weight:600;margin-bottom:14px}
+.tagcard{display:flex;gap:14px;align-items:center;background:rgba(255,255,255,.04);
+ border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:11px;transition:.2s}
+.tagcard.hot{border-color:rgba(231,180,94,.55);background:rgba(231,180,94,.06)}
+.sw{width:52px;height:64px;border-radius:9px;flex:none;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
+.tagcard .n{font-size:15px;font-weight:600}
+.tagcard .p{font-size:13px;color:var(--sub);margin-top:3px}
+.tagcard .again{font-size:12px;color:var(--amber2);margin-top:4px;display:none}
+.tagcard.hot .again{display:block}
+.nfc{margin-left:auto;flex:none;width:54px;height:54px;border-radius:14px;cursor:pointer;
+ border:1px solid rgba(231,180,94,.45);background:rgba(231,180,94,.1);color:#f0e2c8;
+ font-size:11px;font-weight:700;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+ transition:.15s;font-family:inherit}
+.nfc:hover{background:rgba(231,180,94,.22)}
+.nfc:active{transform:scale(.9)}
+.nfc span{font-size:19px}
+.rack .note{font-size:13px;color:var(--faint);line-height:1.7;margin-top:8px}
+.rack .note b{color:var(--amber2)}
+
+/* SHOP WATCH */
+.watchwrap{display:flex;flex-direction:column;align-items:center;position:relative;padding:22px 0}
+.watch{position:relative;z-index:1}
+.case{position:relative;width:700px;height:264px;border-radius:132px;
+ background:linear-gradient(160deg,#2e2f31 0%,#101112 40%,#1c1d1f 75%,#0c0d0e 100%);
+ box-shadow:0 26px 70px rgba(0,0,0,.7),inset 0 1px 1px rgba(255,255,255,.16),inset 0 -2px 6px rgba(0,0,0,.6);
+ display:flex;align-items:center;justify-content:center}
+.blade{position:absolute;top:50%;width:78px;height:108px;transform:translateY(-50%);
+ background:linear-gradient(160deg,#e8e9ea,#8f9294 45%,#d6d8d9);display:flex;align-items:center;justify-content:center;
+ font-size:9px;font-weight:700;letter-spacing:.14em;color:#3c3e40}
+.blade.r{right:16px;clip-path:polygon(0 18%,100% 0,100% 100%,0 82%);border-radius:9px}
+.blade.l{left:16px;clip-path:polygon(0 0,100% 18%,100% 82%,0 100%);border-radius:9px;font-size:0}
+.screen{position:relative;width:512px;height:204px;border-radius:102px;overflow:hidden;
+ background:radial-gradient(130% 120% at 30% 0%,#17191c 0%,#050607 68%);
+ border:1px solid #000;box-shadow:inset 0 0 24px rgba(0,0,0,.8)}
+.screen::after{content:'';position:absolute;inset:0;pointer-events:none;
+ background:linear-gradient(115deg,transparent 42%,rgba(255,255,255,.05) 48%,transparent 55%)}
+.watch.buzz{animation:buzz .45s}
+@keyframes buzz{0%,100%{transform:translate(0)}15%{transform:translate(-3px,1px)}30%{transform:translate(3px,-1px)}
+ 45%{transform:translate(-3px,-1px)}60%{transform:translate(3px,1px)}75%{transform:translate(-2px,0)}}
+
+.scr{position:absolute;inset:0;padding:26px 46px 20px;display:none}
+.scr.on{display:block}
+.hdr{display:flex;justify-content:space-between;font-size:13px;color:var(--sub);letter-spacing:.1em}
+.hdr .id{color:var(--faint)}
+
+/* face */
+.fmark{font-size:20px;font-weight:700;letter-spacing:.3em;text-align:center;margin-top:34px}
+.fhint{font-size:13px;letter-spacing:.14em;color:var(--sub);text-align:center;margin-top:16px}
+.fhint2{font-size:12px;color:var(--faint);text-align:center;margin-top:7px}
+.fbadge{position:absolute;left:50%;bottom:20px;transform:translateX(-50%);font-size:12px;
+ color:#f0e2c8;letter-spacing:.08em;display:none;text-align:center;width:90%}
+
+/* product */
+.prow{display:flex;align-items:center;gap:26px;margin-top:14px}
+.pinfo{flex:1;min-width:0}
+.pname{font-size:22px;font-weight:700;letter-spacing:.04em;line-height:1.2;text-transform:uppercase}
+.pcolor{font-size:13px;letter-spacing:.2em;color:var(--sub);margin-top:5px;text-transform:uppercase}
+.psize{display:flex;align-items:center;gap:11px;margin-top:16px;font-size:13px;letter-spacing:.12em;color:var(--sub);flex-wrap:wrap}
+.sz{color:var(--faint)}
+.sz.av{color:var(--ink)}
+.sz.sel{width:30px;height:30px;border:1.6px solid var(--ink);border-radius:50%;
+ display:inline-flex;align-items:center;justify-content:center;color:var(--ink);font-weight:600}
+.sz.out{text-decoration:line-through;opacity:.45}
+.keep{flex:none;width:84px;height:84px;border-radius:50%;border:1.8px solid rgba(243,239,233,.8);
+ background:none;color:var(--ink);cursor:pointer;font-family:inherit;
+ display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;transition:.2s}
+.keep .hh{font-size:22px;line-height:1}
+.keep .kk{font-size:11px;letter-spacing:.2em;font-weight:600}
+.keep:active{transform:scale(.92)}
+.keep.did{border-color:var(--amber);color:var(--amber)}
+.ptag{position:absolute;left:0;right:0;bottom:16px;text-align:center;font-size:12px;letter-spacing:.16em;color:var(--sub)}
+.ptag b{color:#f0e2c8;font-weight:600}
+
+/* guide */
+.gwrap{display:flex;align-items:center;gap:26px;margin-top:10px}
+.gleft{flex:1}
+.groom{font-size:27px;font-weight:800;letter-spacing:.04em;color:var(--amber)}
+.gitem{font-size:13px;color:var(--sub);margin-top:7px;letter-spacing:.05em}
+.gsteps{display:flex;gap:9px;margin-top:18px;align-items:center}
+.gs{display:flex;align-items:center;gap:6px;font-size:11px;letter-spacing:.05em;color:var(--faint)}
+.gs .dot{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.14)}
+.gs.doing{color:#f0e2c8}.gs.doing .dot{background:var(--amber);animation:pul 1s infinite}
+.gs.done{color:var(--sub)}.gs.done .dot{background:var(--amber2)}
+.gs .ln{width:16px;height:1px;background:rgba(255,255,255,.14)}
+@keyframes pul{50%{box-shadow:0 0 0 5px rgba(231,180,94,.2)}}
+.garr{font-size:14px;font-weight:700;color:var(--amber);letter-spacing:.05em;margin-top:14px;display:none}
+
+/* standby / wipe */
+.center{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center}
+.center .z{font-size:26px;color:var(--amber);margin-bottom:10px}
+.center .t1{font-size:16px;font-weight:700;letter-spacing:.08em}
+.center .t2{font-size:12px;color:var(--sub);margin-top:8px;line-height:1.7;letter-spacing:.03em}
+.hapt{position:absolute;right:46px;bottom:16px;font-size:11px;color:var(--faint);opacity:0;transition:opacity .3s;letter-spacing:.15em}
+.hapt.on{opacity:1}
+
+/* 우측 */
+.side{width:300px}
+.sbtn{display:block;width:100%;font-family:inherit;font-size:15px;font-weight:600;text-align:left;
+ padding:15px 17px;border-radius:16px;margin-bottom:11px;cursor:pointer;
+ border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--ink)}
+.sbtn:hover{border-color:rgba(231,180,94,.4)}
+.sbtn small{display:block;font-weight:400;font-size:12.5px;color:var(--faint);margin-top:4px}
+.log{margin-top:16px;background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:14px;
+ padding:14px 16px;font-size:13px;color:var(--sub);line-height:1.9;min-height:130px;max-height:250px;overflow-y:auto}
+.log b{color:var(--amber2);font-weight:600}
+@media(max-width:1250px){.case{width:560px;height:214px}.screen{width:410px;height:164px;border-radius:82px}}
+</style>
+</head>
+<body>
+<div class="top">
+  <h1>SHOP WATCH</h1>
+  <div class="sub1">FIT STAGE RENTAL SMART WATCH · YOUR PERSONAL SHOPPING ASSISTANT</div>
+  <div class="d">왼쪽 상품의 <b style="color:var(--amber2)">NFC</b>를 눌러 태그하세요 — <b style="color:var(--amber2)">같은 상품을 한 번 더 태그하면(TAG TO SEND)</b> 피팅룸으로 보내집니다</div>
+  <div class="tools">
+    <a class="tbtn gold" href="/ui/walk.html">✦ 3D 워크스루</a>
+    <a class="tbtn" href="/ui/mirror.html">▢ 피팅룸 미러</a>
+    <a class="tbtn" href="/ui/">← 홈</a>
+  </div>
+</div>
+
+<div class="stage">
+  <div class="rack">
+    <h2>매장 행거 — 상품 NFC 태그</h2>
+    <div id="tags"></div>
+    <div class="note">한 번 태그 = 정보 확인<br><b>같은 상품 한 번 더 태그 = 피팅룸 전송</b><br>KEEP = 위시리스트 저장</div>
+  </div>
+
+  <div class="watchwrap watch" id="watch">
+    <div class="case">
+      <div class="blade l">FIT STAGE</div>
+      <div class="blade r">FIT STAGE</div>
+      <div class="screen">
+        <div class="scr on" id="sFace">
+          <div class="hdr"><span id="clk1">11:28</span><span class="id">FIT STAGE</span></div>
+          <div class="fmark">FIT STAGE</div>
+          <div class="fhint">TAG A PRODUCT TO BEGIN ⌾</div>
+          <div class="fhint2">옷의 태그에 워치를 가까이 대보세요</div>
+          <div class="fbadge" id="faceBadge"></div>
+        </div>
+        <div class="scr" id="sProd">
+          <div class="hdr"><span id="clk2">11:28</span><span class="id">SCANNED</span></div>
+          <div class="prow">
+            <div class="pinfo">
+              <div class="pname" id="pName"></div>
+              <div class="pcolor" id="pColor"></div>
+              <div class="psize" id="pSize"></div>
+            </div>
+            <button class="keep" id="bKeep"><span class="hh">♡</span><span class="kk">KEEP</span></button>
+          </div>
+          <div class="ptag">TAG TO SEND ⌾)) · <b>한 번 더 태그하면 피팅룸으로</b></div>
+        </div>
+        <div class="scr" id="sGuide">
+          <div class="hdr"><span id="clk3">11:28</span><span class="id">DELIVERY</span></div>
+          <div class="gwrap"><div class="gleft">
+            <div class="groom">→ FITTING ROOM 01</div>
+            <div class="gitem" id="gItem"></div>
+            <div class="gsteps">
+              <div class="gs" id="st0"><div class="dot"></div>접수</div><div class="gs"><div class="ln"></div></div>
+              <div class="gs" id="st1"><div class="dot"></div>피킹</div><div class="gs"><div class="ln"></div></div>
+              <div class="gs" id="st2"><div class="dot"></div>레일 이동</div><div class="gs"><div class="ln"></div></div>
+              <div class="gs" id="st3"><div class="dot"></div>도착</div>
+            </div>
+            <div class="garr" id="gArr">도착 ✓ 피팅룸 01에서 기다리고 있어요</div>
+          </div></div>
+        </div>
+        <div class="scr" id="sStandby"><div class="center">
+          <div class="z">✦</div><div class="t1">SESSION → TABLET</div>
+          <div class="t2">피팅룸 안에서는 스크린이 접객합니다<br>워치는 대기 모드예요</div>
+        </div></div>
+        <div class="scr" id="sWipe"><div class="center">
+          <div class="z">◌</div><div class="t1">RETURNED · DATA ERASED</div>
+          <div class="t2">세션 데이터가 모두 삭제되었습니다<br>이용해주셔서 감사합니다</div>
+        </div></div>
+        <div class="hapt" id="hapt">﹏ HAPTIC</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="side">
+    <h2>시나리오 진행</h2>
+    <button class="sbtn" id="scEnter">🚪 피팅룸 01 입실<small>워치 대기 모드 — 세션은 태블릿으로</small></button>
+    <button class="sbtn" id="scExit">👕 피팅 끝내고 나오기<small>워치 화면이 다시 켜집니다</small></button>
+    <button class="sbtn" id="scReturn">↩︎ 워치 반납 (퇴장)<small>반납 즉시 초기화 — 데이터 전량 삭제</small></button>
+    <div class="log" id="log"><b>이벤트 로그</b><br>세션 준비 중…</div>
+  </div>
+</div>
+
+<script src="/ui/fitstage.js"></script>
+<script>
+const F=window.FitStage;
+const $=id=>document.getElementById(id);
+const SCREENS=['sFace','sProd','sGuide','sStandby','sWipe'];
+let sessionId=null, products=[], cur=null, kept=new Set(), inRoom=false, returned=false, es=null;
+
+function show(id){SCREENS.forEach(s=>$(s).classList.toggle('on',s===id));markHot();}
+function buzz(){const w=$('watch');w.classList.remove('buzz');void w.offsetWidth;w.classList.add('buzz');
+ $('hapt').classList.add('on');setTimeout(()=>$('hapt').classList.remove('on'),700);}
+function log(t){const l=$('log');l.innerHTML+='<br>· '+t;l.scrollTop=l.scrollHeight;}
+function markHot(){document.querySelectorAll('.tagcard').forEach((el)=>{
+ el.classList.toggle('hot',!!cur&&el.dataset.pid===cur.productId&&$('sProd').classList.contains('on'));});}
+function badge(){const b=$('faceBadge');const parts=[];
+ if(kept.size>0)parts.push('KEEP '+kept.size);
+ if(parts.length){b.style.display='block';b.textContent=parts.join('  ·  ');}else b.style.display='none';}
+function tick(){const d=new Date();const t=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+ ['clk1','clk2','clk3'].forEach(c=>$(c).textContent=t);}
+tick();setInterval(tick,10000);
+
+function firstAvail(p){const s=(p.sizes||[]).find(x=>x.stock>0);return s?s.size:'M';}
+
+function renderTags(){
+  $('tags').innerHTML='';
+  products.forEach(p=>{
+    const d=document.createElement('div');d.className='tagcard';d.dataset.pid=p.productId;
+    d.innerHTML=`<div class="sw" style="background:${F.grad(p.color)}"></div>
+     <div><div class="n">${p.name}</div><div class="p">${F.krw(p.price)}</div>
+     <div class="again">한 번 더 태그 → 피팅룸 전송</div></div>
+     <button class="nfc"><span>⌾</span>NFC</button>`;
+    d.querySelector('.nfc').onclick=()=>tag(p);
+    $('tags').appendChild(d);
+  });
+}
+
+async function tag(p){
+  if(returned){log('반납된 워치 — 재수령 후 이용해주세요');return;}
+  if(inRoom){buzz();log('피팅룸 안 — 워치는 대기 모드 (태블릿이 접객 중)');return;}
+  // 같은 상품 두 번째 태그 = TAG TO SEND
+  if(cur&&cur.productId===p.productId&&$('sProd').classList.contains('on')){return sendToRoom(p);}
+  cur=p;buzz();
+  try{ await F.api(`/sessions/${sessionId}/scans`,{method:'POST',body:JSON.stringify({productId:p.productId})}); }catch(e){}
+  $('pName').textContent=(p.name||'').toUpperCase();
+  $('pColor').textContent=(p.color||'').toUpperCase()+' · '+F.krw(p.price);
+  const ps=$('pSize');ps.innerHTML='SIZE&nbsp;';
+  (p.sizes||[]).forEach((s,i)=>{
+    const e=document.createElement('span');e.className='sz'+(s.stock>0?' av':' out');e.textContent=s.size;ps.appendChild(e);
+    if(i<p.sizes.length-1){const d=document.createElement('span');d.textContent=' · ';d.style.color='rgba(243,239,233,.25)';ps.appendChild(d);}
+  });
+  const firstAv=ps.querySelector('.av');if(firstAv)firstAv.classList.add('sel');
+  $('bKeep').classList.toggle('did',kept.has(p.productId));
+  $('bKeep').querySelector('.hh').textContent=kept.has(p.productId)?'♥':'♡';
+  show('sProd');badge();
+  log('NFC 태그 — <b>'+p.name+'</b> 정보 표시');
+}
+
+$('bKeep').onclick=async()=>{
+  if(!cur)return;buzz();
+  try{
+    if(kept.has(cur.productId)){await F.api(`/sessions/${sessionId}/keeps/${cur.productId}`,{method:'DELETE'});kept.delete(cur.productId);log('KEEP 해제 — '+cur.name);}
+    else{await F.api(`/sessions/${sessionId}/keeps`,{method:'POST',body:JSON.stringify({productId:cur.productId,size:firstAvail(cur)})});kept.add(cur.productId);log('<b>KEEP</b> — '+cur.name);}
+  }catch(e){log('KEEP 오류: '+e.message);}
+  $('bKeep').classList.toggle('did',kept.has(cur.productId));
+  $('bKeep').querySelector('.hh').textContent=kept.has(cur.productId)?'♥':'♡';
+  badge();
+};
+
+async function sendToRoom(p){
+  buzz();
+  const size=firstAvail(p);
+  $('gItem').textContent=p.name+' · '+size+' — 옷을 먼저 보내드리고 있어요';
+  ['st0','st1','st2','st3'].forEach(s=>$(s).className='gs');
+  $('gArr').style.display='none';
+  show('sGuide');
+  try{
+    await F.api(`/sessions/${sessionId}/deliveries`,{method:'POST',body:JSON.stringify({productId:p.productId,size})});
+    log('<b>TAG TO SEND</b> — '+p.name+' → 피팅룸 01 배정 (진행은 SSE)');
+  }catch(e){
+    log('전송 불가: '+(e.message||e.code));
+    $('gItem').textContent=e.message||'전송할 수 없어요';
+  }
+}
+
+/* 딜리버리 상태 → 4단계 가이드 매핑 */
+const STEP_IDX={REQUESTED:0,PICKING:1,ON_RAIL:2,ENTERING:2,SEALED:2,STAGING:2,READY:3};
+function updateGuide(status){
+  const idx=STEP_IDX[status];if(idx===undefined)return;
+  ['st0','st1','st2','st3'].forEach((s,i)=>{
+    $(s).className='gs'+(i<idx?' done':(i===idx?' doing':''));
+  });
+  if(status==='READY'){$('st3').className='gs done';$('gArr').style.display='block';buzz();log('워드로브 <b>도착 ✓</b> — 햅틱 알림');}
+}
+
+$('scEnter').onclick=()=>{if(returned)return;inRoom=true;buzz();show('sStandby');log('피팅룸 01 <b>입실</b> — 워치 대기 모드, 세션 → 태블릿');};
+$('scExit').onclick=()=>{if(!inRoom)return;inRoom=false;buzz();show('sFace');badge();log('퇴실 — 워치 재활성');};
+$('scReturn').onclick=async()=>{
+  if(returned)return;inRoom=false;returned=true;buzz();show('sWipe');
+  log('워치 <b>반납</b> — 세션 데이터 전량 삭제 (기본값은 삭제)');
+  try{ await F.api(`/sessions/${sessionId}/close`,{method:'POST',body:JSON.stringify({transfer:false})}); }catch(e){}
+  F.clearSession();
+  setTimeout(async()=>{returned=false;cur=null;kept.clear();await boot();show('sFace');badge();log('새 워치 수령 — 새 익명 세션 시작');},3200);
+};
+
+async function boot(){
+  try{
+    const cat=await F.api('/catalog/products?limit=100');
+    const want=['p_1001','p_1002','p_1003','p_1004'];
+    const map={};(cat.items||[]).forEach(p=>map[p.productId]=p);
+    products=want.map(id=>map[id]).filter(Boolean);
+    if(products.length<4)products=(cat.items||[]).slice(0,4);
+    renderTags();
+    const s=await F.ensureSession();sessionId=s.sessionId;
+    if(es)es.close();
+    es=F.subscribe(sessionId,{'delivery.updated':(d)=>updateGuide(d.status),'wardrobe.ready':()=>updateGuide('READY')});
+    log('세션 준비 완료 · '+sessionId);
+  }catch(e){
+    log('<b style="color:#e88">백엔드 연결 실패</b> — '+(e.message||e)+'<br>서버 확인 후 새로고침 해주세요');
+  }
+}
+boot();
+</script>
+</body>
+</html>

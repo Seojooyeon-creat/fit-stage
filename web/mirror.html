@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>FIT STAGE — 미러</title>
+<style>
+:root{
+  --bg:#0b0a09; --ink:#F3EFE9; --sub:rgba(243,239,233,.56); --faint:rgba(243,239,233,.3);
+  --amber:#E7B45E; --amber2:#c9a86a; --line:rgba(255,255,255,.1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);
+  font-family:'Pretendard','Apple SD Gothic Neo','Noto Sans KR',sans-serif;
+  display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:22px 16px}
+.top{text-align:center;margin-bottom:16px}
+.top h1{font-size:19px;font-weight:700;letter-spacing:.16em;color:var(--amber2)}
+.top .d{font-size:15px;color:var(--sub);margin-top:6px}
+.tools{display:flex;gap:10px;justify-content:center;margin-top:12px}
+.tbtn{font-size:15px;padding:11px 18px;border-radius:12px;border:1px solid var(--line);
+  background:rgba(255,255,255,.04);color:var(--ink);cursor:pointer;font-family:inherit;text-decoration:none;transition:.2s}
+.tbtn:hover{border-color:rgba(231,180,94,.5);color:#f0e2c8}
+.tbtn.gold{border-color:rgba(231,180,94,.5);background:rgba(231,180,94,.12);color:#f4e6c9;font-weight:700}
+
+.stage{display:flex;gap:30px;align-items:flex-start;justify-content:center;flex-wrap:wrap;margin-top:6px}
+
+/* ---------- MIRROR ---------- */
+.mirror{width:440px;height:840px;border-radius:26px;position:relative;overflow:hidden;
+  background:linear-gradient(168deg,#121517 0%,#0d0f11 55%,#101315 100%);border:1px solid var(--line);
+  box-shadow:0 0 0 7px #060505,0 30px 80px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.05)}
+.mirror::after{content:'';position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(115deg,transparent 40%,rgba(255,255,255,.035) 47%,transparent 54%)}
+.m-head{display:flex;align-items:center;justify-content:space-between;padding:24px 26px 0}
+.m-brand{font-size:15px;letter-spacing:.34em;color:var(--faint);font-weight:600}
+.m-room{font-size:14px;color:var(--faint)}
+.mic{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;
+  color:var(--faint);font-size:17px;cursor:pointer;transition:.25s;margin-left:12px}
+.mic.on{color:var(--amber);border-color:rgba(231,180,94,.5);box-shadow:0 0 12px rgba(231,180,94,.25)}
+.m-body{position:absolute;top:76px;bottom:118px;left:0;right:0;padding:10px 26px;overflow-y:auto;display:flex;flex-direction:column}
+.m-body::-webkit-scrollbar{width:0}
+.m-foot{position:absolute;bottom:0;left:0;right:0;padding:14px 22px 20px;background:linear-gradient(0deg,#0d0f11 70%,transparent)}
+
+/* chat */
+.msg{max-width:88%;font-size:17px;line-height:1.55;padding:14px 17px;border-radius:18px;margin-bottom:12px;
+  opacity:0;transform:translateY(8px);animation:in .45s forwards}
+.msg.ai{background:rgba(255,255,255,.05);border:1px solid var(--line);border-top-left-radius:7px;align-self:flex-start}
+.msg.me{background:rgba(231,180,94,.13);border:1px solid rgba(231,180,94,.25);border-top-right-radius:7px;align-self:flex-end;color:#f0e2c8}
+@keyframes in{to{opacity:1;transform:none}}
+.msg .t{display:block;font-size:12px;color:var(--faint);margin-bottom:5px;letter-spacing:.06em}
+.msg.thinking .dots{letter-spacing:.4em;color:var(--amber2);animation:breathe 1.6s ease-in-out infinite}
+@keyframes breathe{0%,100%{opacity:.28}50%{opacity:.95}}
+
+/* product cards */
+.cards{display:flex;flex-direction:column;gap:11px;margin:4px 0 14px;animation:in .45s .1s both}
+.card{display:flex;gap:14px;align-items:center;background:rgba(255,255,255,.04);border:1px solid var(--line);
+  border-radius:16px;padding:13px 15px;cursor:pointer;transition:.2s}
+.card:hover{border-color:rgba(231,180,94,.45);background:rgba(231,180,94,.06)}
+.card.sel{border-color:var(--amber);background:rgba(231,180,94,.09)}
+.sw{width:58px;height:70px;border-radius:9px;flex:none;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
+.card .n{font-size:17px;font-weight:600}
+.card .why{font-size:14px;color:var(--sub);line-height:1.45;margin-top:4px}
+.card .pz{font-size:13px;color:var(--faint);margin-top:5px;letter-spacing:.04em}
+.card .stk{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin-top:6px;font-size:12.5px;color:var(--sub)}
+.card .stk b{color:var(--faint);font-weight:600;margin-right:2px;letter-spacing:.04em}
+.card .stk .s.sel{color:var(--amber2);font-weight:600}
+.card .stk .s.out{text-decoration:line-through;opacity:.5}
+.card .av{font-size:11.5px;color:var(--faint);margin-top:4px;letter-spacing:.04em}
+
+/* chips */
+.chips{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:12px}
+.chip{font-size:16px;padding:12px 18px;border-radius:22px;border:1px solid var(--line);color:var(--ink);
+  background:rgba(255,255,255,.04);cursor:pointer;transition:.2s;font-family:inherit}
+.chip:hover{border-color:rgba(231,180,94,.5);color:#f0e2c8}
+.chip.gold{border-color:rgba(231,180,94,.45);background:rgba(231,180,94,.1);color:#f0e2c8}
+.inrow{display:flex;gap:10px}
+.inrow input{flex:1;font-family:inherit;font-size:16px;padding:14px 16px;border-radius:16px;
+  border:1px solid var(--line);background:rgba(255,255,255,.05);color:var(--ink)}
+.inrow input::placeholder{color:var(--faint)}
+.inrow button{font-family:inherit;font-size:16px;padding:0 20px;border-radius:16px;cursor:pointer;
+  border:1px solid rgba(231,180,94,.45);background:rgba(231,180,94,.12);color:#f4e6c9;font-weight:700}
+
+/* preparing / reveal */
+.stageblk{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:18px;padding:22px 18px;margin:6px 0 14px;
+  text-align:center;animation:in .45s both}
+.ring{width:86px;height:86px;border-radius:50%;position:relative;margin:6px auto 20px}
+.ring.prep{border:2px solid rgba(231,180,94,.25)}
+.ring.prep::before{content:'';position:absolute;inset:-2px;border-radius:50%;border:2px solid transparent;
+  border-top-color:var(--amber);animation:spin 1.4s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ring .ic{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:30px;color:var(--amber)}
+.ring.done{border:2px solid rgba(231,180,94,.65);box-shadow:0 0 34px rgba(231,180,94,.35);animation:pulse 2.4s ease-in-out infinite}
+@keyframes pulse{50%{box-shadow:0 0 50px rgba(231,180,94,.55)}}
+.big{font-size:24px;font-weight:700;letter-spacing:.02em}
+.sub2{font-size:16px;color:var(--sub);margin-top:9px;line-height:1.6}
+.track{width:82%;height:4px;background:rgba(255,255,255,.08);border-radius:2px;margin:22px auto 0;overflow:hidden}
+.track i{display:block;height:100%;width:8%;background:linear-gradient(90deg,var(--amber),#f5d9a6);border-radius:2px;transition:width .5s ease}
+.stepline{margin-top:14px;font-size:13px;color:var(--faint);letter-spacing:.05em}
+.stepline b{color:var(--amber2);font-weight:600}
+
+/* keep / checkout summary */
+.sum{background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:16px;padding:16px 18px;margin:6px 0 14px;animation:in .45s both}
+.sum .r{display:flex;justify-content:space-between;font-size:16px;margin-bottom:10px}
+.sum .r:last-child{margin:0;padding-top:10px;border-top:1px solid var(--line);font-weight:700}
+.sum .r span:first-child{color:var(--sub)}
+.sum .r:last-child span:first-child{color:var(--ink)}
+
+/* handoff qr */
+.qr{width:150px;height:150px;border-radius:16px;margin:6px auto 18px;position:relative;
+  background:repeating-linear-gradient(0deg,transparent 0 7px,rgba(243,239,233,.9) 7px 12px),
+   repeating-linear-gradient(90deg,#101214 0 7px,transparent 7px 14px);
+  background-color:rgba(243,239,233,.9);border:7px solid rgba(243,239,233,.92);opacity:.92}
+.qr::after{content:'✦';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-size:24px;color:#101214;background:rgba(243,239,233,.95);width:42px;height:42px;margin:auto;border-radius:9px}
+
+/* ---------- PHONE ---------- */
+.phone{width:280px;height:580px;border-radius:34px;background:linear-gradient(170deg,#131517,#0e1012);
+  border:1px solid var(--line);box-shadow:0 0 0 6px #060505,0 24px 60px rgba(0,0,0,.55);
+  position:relative;overflow:hidden;opacity:.32;transition:.5s;transform:translateY(12px)}
+.phone.live{opacity:1;transform:none}
+.notch{width:86px;height:20px;background:#060505;border-radius:0 0 14px 14px;margin:0 auto}
+.p-in{padding:20px 22px}
+.p-brand{font-size:12px;letter-spacing:.3em;color:var(--faint);text-align:center;margin-bottom:16px}
+.p-title{font-size:19px;font-weight:700;margin-bottom:4px}
+.p-sub{font-size:14px;color:var(--sub);margin-bottom:16px;line-height:1.5}
+.p-item{display:flex;gap:12px;align-items:center;background:rgba(255,255,255,.045);border:1px solid var(--line);
+  border-radius:14px;padding:11px 13px;margin-bottom:9px}
+.p-item .sw{width:40px;height:50px;border-radius:8px}
+.p-item .n{font-size:15px;font-weight:600}
+.p-item .s{font-size:12px;color:var(--sub);margin-top:2px}
+.p-cta{margin-top:14px;text-align:center;font-size:15px;padding:14px;border-radius:14px;
+  background:rgba(231,180,94,.14);border:1px solid rgba(231,180,94,.4);color:#f0e2c8;font-weight:600}
+.p-note{font-size:12px;color:var(--faint);text-align:center;margin-top:12px;line-height:1.5}
+.p-label{position:absolute;bottom:14px;left:0;right:0;text-align:center;font-size:12px;color:var(--faint)}
+.hidden{display:none!important}
+.err{color:#e88;font-size:14px;text-align:center;margin-top:10px}
+</style>
+</head>
+<body>
+<div class="top">
+  <h1>FIT STAGE — 미러</h1>
+  <div class="d">말씀만 주세요. 어울리는 옷을 이 방으로 가져다 드릴게요.</div>
+  <div class="tools">
+    <a class="tbtn gold" href="/ui/walk.html">✦ 3D 워크스루 입장</a>
+    <a class="tbtn" href="/ui/watch.html">◉ 워치</a>
+    <a class="tbtn" href="/ui/">← 홈</a>
+    <button class="tbtn" id="btnReset">↺ 데모 리셋</button>
+  </div>
+</div>
+
+<div class="stage">
+  <!-- MIRROR -->
+  <div class="mirror">
+    <div class="m-head">
+      <div class="m-brand">FIT STAGE</div>
+      <div style="display:flex;align-items:center">
+        <div class="m-room" id="room">ROOM 01</div>
+        <div class="mic" id="mic" title="음성 토글">🎙</div>
+      </div>
+    </div>
+    <div class="m-body" id="chat"></div>
+    <div class="m-foot">
+      <div class="chips" id="chips"></div>
+      <div class="inrow">
+        <input id="input" placeholder="말씀하시거나, 위 선택지를 눌러 주세요" autocomplete="off"/>
+        <button id="send">전송</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHONE -->
+  <div class="phone" id="phone">
+    <div class="notch"></div>
+    <div class="p-in" id="pin">
+      <div class="p-brand">FIT STAGE ONLINE</div>
+      <div class="p-title">오늘의 피팅 세션 ✦</div>
+      <div class="p-sub">핸드오프를 발급하시면<br/>이 화면으로 세션이 이어져요.</div>
+    </div>
+    <div class="p-label">고객 폰 — 오프 → 온 핸드오프</div>
+  </div>
+</div>
+
+<script src="/ui/fitstage.js"></script>
+<script>
+const F = window.FitStage;
+const chat = document.getElementById('chat');
+const chipsEl = document.getElementById('chips');
+const input = document.getElementById('input');
+const phone = document.getElementById('phone');
+let sessionId = null;
+let catalog = {};      // productId -> product
+let prepEl = null;     // 현재 준비 중 블록
+
+function el(html){const d=document.createElement('div');d.innerHTML=html.trim();return d.firstChild;}
+function scroll(){chat.scrollTop=chat.scrollHeight;}
+
+function addMsg(role, text){
+  const cls = role==='user' ? 'me' : 'ai';
+  const label = role==='user' ? '' : '<span class="t">컨시어지</span>';
+  chat.appendChild(el(`<div class="msg ${cls}">${label}${text}</div>`));
+  scroll();
+}
+
+function stockLine(p, sel){
+  const parts = (p.sizes||[]).map(s=>{
+    const cls = s.size===sel ? 's sel' : (s.stock>0 ? 's av' : 's out');
+    const q = s.stock>0 ? (s.stock+'개') : '품절';
+    return `<span class="${cls}">${s.size} ${q}</span>`;
+  }).join('');
+  return `<div class="stk"><b>재고</b>${parts}</div>`;
+}
+function availLine(p){
+  const a = p.availability||{};
+  const tags=[];
+  if(a.store) tags.push('매장 픽업');
+  if(a.online) tags.push('온라인 구매');
+  const color = p.color ? p.color.toUpperCase() : '';
+  return `<div class="av">${[color, tags.join(' · ')].filter(Boolean).join(' · ')}</div>`;
+}
+function addProducts(items){
+  const wrap = el('<div class="cards"></div>');
+  items.forEach((it,i)=>{
+    const p = catalog[it.productId] || {name:it.productId,price:0,color:'',sizes:[],availability:{}};
+    const card = el(`<div class="card${i===0?' sel':''}">
+      <div class="sw" style="background:${F.grad(p.color)}"></div>
+      <div style="flex:1;min-width:0"><div class="n">${p.name}</div>
+        <div class="why">${it.reason||''}</div>
+        <div class="pz">SIZE ${it.size} · ${F.krw(p.price)}</div>
+        ${stockLine(p, it.size)}
+        ${availLine(p)}</div>
+    </div>`);
+    card.onclick=()=>send(`${i+1}번 입어볼게요`);
+    wrap.appendChild(card);
+  });
+  chat.appendChild(wrap); scroll();
+}
+
+function addPrep(){
+  prepEl = el(`<div class="stageblk">
+    <div class="ring prep"><div class="ic">⟡</div></div>
+    <div class="big" style="font-size:19px">가져오는 중</div>
+    <div class="sub2" id="prepItem">곧 뒤쪽 워드로브에 닿아요.</div>
+    <div class="track"><i id="prepBar"></i></div>
+    <div class="stepline" id="prepStep"><b>요청을 받았어요</b></div>
+  </div>`);
+  chat.appendChild(prepEl); scroll();
+}
+
+function updatePrep(d){
+  if(!prepEl) addPrep();
+  const bar = prepEl.querySelector('#prepBar');
+  const step = prepEl.querySelector('#prepStep');
+  if(bar) bar.style.width = Math.round((d.stepIndex/d.totalSteps)*100)+'%';
+  if(step) step.innerHTML = `<b>${d.label||d.status}</b>`;
+}
+
+function reveal(){
+  if(!prepEl){ addPrep(); }
+  prepEl.innerHTML = `<div class="ring done"><div class="ic">✦</div></div>
+    <div class="big">준비됐어요</div>
+    <div class="sub2">뒤쪽 워드로브를 열어 보세요.</div>
+    <div class="stepline" style="margin-top:16px">창고 출발 · 레일 이동 · <b>워드로브 도착</b></div>`;
+  prepEl = null; // 다음 딜리버리를 위해 해제
+  scroll();
+}
+
+function addSum(items,total){
+  let rows = items.map(k=>{
+    const p = catalog[k.productId]||{name:k.productId,price:0};
+    return `<div class="r"><span>${p.name} · ${k.size}</span><span>${F.krw(p.price)}</span></div>`;
+  }).join('');
+  chat.appendChild(el(`<div class="sum">${rows}<div class="r"><span>합계</span><span style="color:var(--amber)">${F.krw(total)}</span></div></div>`));
+  scroll();
+}
+
+function addCheckout(a){
+  chat.appendChild(el(`<div class="stageblk">
+    <div class="ring done"><div class="ic">✓</div></div>
+    <div class="big">결제됐어요</div>
+    <div class="sub2">주문 ${a.orderId} · ${F.krw(a.total)}<br/>쇼핑백은 나가시는 길에 준비해 둘게요.</div>
+  </div>`)); scroll();
+}
+
+async function addHandoff(a){
+  chat.appendChild(el(`<div class="stageblk">
+    <div class="qr"></div>
+    <div class="big" style="font-size:19px">오늘의 세션을 담아 드릴게요</div>
+    <div class="sub2">스캔하시면 폰에서 그대로 이어져요.<br/><span style="color:var(--faint)">저장하지 않으시면 나가실 때 모두 지워집니다.</span></div>
+  </div>`)); scroll();
+  // 폰 패널에 실제 스냅샷 로드 (오프→온 핸드오프 시연)
+  try{
+    const code = (a.qrUrl||'').split('/').pop();
+    const t = await F.api(`/handoff/${code}`);
+    renderPhone(t.snapshot);
+  }catch(e){ /* noop */ }
+}
+
+function renderPhone(snap){
+  const size = Object.values(snap.confirmedSizes||{})[0] || '—';
+  let items = (snap.keeps||[]).map(k=>`
+    <div class="p-item"><div class="sw" style="background:${F.grad((catalog[k.productId]||{}).color)}"></div>
+    <div><div class="n">${k.name}</div><div class="s">${k.size} · 킵 · ${F.krw(k.price)}</div></div></div>`).join('');
+  (snap.orders||[]).forEach(o=>(o.items||[]).forEach(it=>{
+    const p = catalog[it.productId]||{name:it.productId,price:0};
+    items += `<div class="p-item"><div class="sw" style="background:${F.grad(p.color)}"></div>
+      <div><div class="n">${p.name}</div><div class="s">${it.size} · 주문 · ${F.krw(p.price)}</div></div></div>`;
+  }));
+  document.getElementById('pin').innerHTML = `
+    <div class="p-brand">FIT STAGE ONLINE</div>
+    <div class="p-title">오늘의 피팅 세션 ✦</div>
+    <div class="p-sub">${snap.storeName||'매장'}에서 이어졌어요<br/>확정 핏 <b style="color:var(--amber2)">${size}</b></div>
+    ${items || '<div class="p-sub">아직 담긴 항목이 없어요.</div>'}
+    <div class="p-cta">이 핏 그대로 주문하기</div>
+    <div class="p-note">확정 사이즈 기준으로 모든 상품이 자동 환산돼요.</div>`;
+  phone.classList.add('live');
+}
+
+function renderChips(list){
+  chipsEl.innerHTML='';
+  (list||[]).forEach((c,i)=>{
+    const b = el(`<button class="chip${i===0?' gold':''}">${c}</button>`);
+    b.onclick=()=>send(c);
+    chipsEl.appendChild(b);
+  });
+}
+
+function handleUi(a){
+  switch(a.type){
+    case 'SHOW_PRODUCTS': addProducts(a.items); break;
+    case 'SHOW_DELIVERY_STATUS': addPrep(); break;
+    case 'SHOW_KEEP_LIST': addSum(a.items||[], a.total||0); break;
+    case 'SHOW_CHECKOUT_RESULT': addCheckout(a); break;
+    case 'SHOW_HANDOFF_QR': addHandoff(a); break;
+    case 'SHOW_CHIPS': renderChips(a.chips); break;
+  }
+}
+
+let busy=false;
+async function send(text){
+  if(busy||!text||!sessionId) return;
+  busy=true; input.value='';
+  addMsg('user', text);
+  renderChips([]);
+  // 컨시어지 응답 대기 표시 (LLM 왕복 2~8초) — 은은한 점등
+  const thinking = el('<div class="msg ai thinking"><span class="t">컨시어지</span><span class="dots">✦ ✦ ✦</span></div>');
+  chat.appendChild(thinking); scroll();
+  try{
+    const r = await F.api(`/sessions/${sessionId}/messages`, {method:'POST', body:JSON.stringify({text})});
+    thinking.remove();
+    (r.messages||[]).forEach(m=>addMsg('assistant', m.text));
+    (r.uiActions||[]).forEach(handleUi);
+  }catch(e){
+    thinking.remove();
+    addMsg('assistant', e.code==='LLM_UNAVAILABLE' ? '다시 한 번 말씀해 주시겠어요?' : ('잠시 문제가 있었어요 — 다시 말씀해 주시겠어요?'));
+  }finally{ busy=false; }
+}
+
+async function init(){
+  chat.innerHTML='';
+  try{
+    // 카탈로그 캐시 (카드·폰 렌더용)
+    try{
+      const cat = await F.api('/catalog/products?limit=100');
+      (cat.items||[]).forEach(p=>catalog[p.productId]=p);
+    }catch(e){}
+    const s = await F.ensureSession();
+    sessionId = s.sessionId;
+    document.getElementById('room').textContent = `ROOM 01 · ${sessionId}`;
+    addMsg('assistant', '어서 오세요. 어떤 옷을 찾으시나요?');
+    renderChips(['다음 주 면접이에요','데이트 룩 보여 주세요','그냥 둘러볼게요']);
+    // SSE 구독 — 진행(딜리버리)은 SSE가 담당 (응답 REST / 진행 SSE 분리)
+    F.subscribe(sessionId, {
+      'delivery.updated': (d)=>{ if(d.status==='READY') return; updatePrep(d); },
+      'wardrobe.ready': ()=>reveal(),
+      'handoff.claimed': ()=>{ phone.classList.add('live'); },
+      'session.closed': ()=>addMsg('assistant','오늘 세션을 마칠게요. 편안한 하루 보내세요.'),
+    });
+  }catch(e){
+    addMsg('assistant','잠시 연결이 끊겼어요. 서버를 확인하시고 다시 이어 주세요.');
+    chat.appendChild(el(`<div class="err">${e.message||e}</div>`));
+    renderChips(['↺ 다시 잇기']);
+    chipsEl.querySelector('.chip').onclick=async()=>{ await F.api('/demo/reset',{method:'POST'}).catch(()=>{}); F.clearSession(); location.reload(); };
+  }
+}
+
+document.getElementById('send').onclick=()=>send(input.value.trim());
+input.addEventListener('keydown',e=>{ if(e.key==='Enter') send(input.value.trim()); });
+document.getElementById('mic').onclick=e=>e.currentTarget.classList.toggle('on');
+document.getElementById('btnReset').onclick=async()=>{
+  await F.api('/demo/reset',{method:'POST'}); F.clearSession(); location.reload();
+};
+init();
+</script>
+</body>
+</html>
