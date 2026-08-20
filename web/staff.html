@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>FIT STAGE — Store Manager</title>
+<style>
+:root{--bg:#0b0a09;--panel:#141310;--ink:#F3EFE9;--sub:rgba(243,239,233,.6);--faint:rgba(243,239,233,.32);
+ --gold:#E7B45E;--gold2:#c9a86a;--line:rgba(255,255,255,.1);--ok:#7fd0a0;--warn:#e8a05a;--bad:#e88}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:
+  radial-gradient(circle at 80% 12%,rgba(231,180,94,.08),transparent 26%),
+  linear-gradient(135deg,#090907,#11100d 55%,#090806);
+  color:var(--ink);min-height:100vh;
+  font-family:'Pretendard','Apple SD Gothic Neo','Noto Sans KR',sans-serif;-webkit-font-smoothing:antialiased}
+
+/* ---------- LOGIN ---------- */
+#login{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:10;
+  background:radial-gradient(circle at 50% 30%,rgba(231,180,94,.06),transparent 40%),#0a0908}
+.lcard{width:380px;max-width:92vw;border:1px solid var(--line);border-radius:20px;padding:38px 34px;
+  background:linear-gradient(150deg,rgba(28,25,19,.9),rgba(12,11,9,.95));box-shadow:0 30px 80px rgba(0,0,0,.5)}
+.lbrand{font-size:16px;letter-spacing:.34em;color:var(--gold2);font-weight:700;text-align:center}
+.ltitle{font-size:26px;font-weight:700;text-align:center;margin-top:14px}
+.lsub{font-size:14px;color:var(--faint);text-align:center;margin-top:8px;letter-spacing:.04em}
+.lfield{margin-top:20px}
+.lfield label{display:block;font-size:13px;color:var(--sub);margin-bottom:7px;letter-spacing:.08em}
+.lfield input{width:100%;font-family:inherit;font-size:16px;padding:14px 15px;border-radius:12px;
+  border:1px solid var(--line);background:rgba(255,255,255,.05);color:var(--ink)}
+.lbtn{width:100%;margin-top:24px;font-family:inherit;font-size:17px;font-weight:700;padding:15px;border-radius:12px;cursor:pointer;
+  border:1px solid rgba(231,180,94,.5);background:rgba(231,180,94,.14);color:#f4e6c9}
+.lbtn:hover{background:rgba(231,180,94,.24)}
+.lerr{color:var(--bad);font-size:14px;text-align:center;margin-top:14px;min-height:18px}
+.lnote{font-size:12px;color:var(--faint);text-align:center;margin-top:16px;line-height:1.6}
+
+/* ---------- CONSOLE ---------- */
+.hidden{display:none!important}
+.header{height:82px;padding:0 4vw;display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid var(--line);background:rgba(12,12,10,.82);backdrop-filter:blur(16px)}
+.hleft{display:flex;align-items:center;gap:18px}
+.back{font-size:15px;color:var(--sub);text-decoration:none;border:1px solid var(--line);border-radius:10px;padding:9px 14px}
+.back:hover{color:var(--ink)}
+.brand{font-size:20px;font-weight:800;letter-spacing:.3em}
+.tag{font-size:13px;font-weight:700;letter-spacing:.2em;color:var(--gold)}
+.hright{display:flex;align-items:center;gap:14px;font-size:13px;color:var(--sub)}
+.odot{width:9px;height:9px;border-radius:50%;background:var(--ok);box-shadow:0 0 10px rgba(127,208,160,.6)}
+.logout{font-size:14px;color:var(--faint);background:none;border:1px solid var(--line);border-radius:10px;padding:8px 13px;cursor:pointer;font-family:inherit}
+
+.wrap{width:min(1400px,94vw);margin:0 auto;padding:30px 0 70px}
+.dh{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:22px}
+.dh .k{font-size:13px;font-weight:700;letter-spacing:.18em;color:var(--gold)}
+.dh h1{font-size:40px;font-weight:500;letter-spacing:-.03em;margin-top:8px}
+.dh .rid{font-size:14px;color:var(--faint);text-align:right}
+
+.grid{display:grid;grid-template-columns:1.3fr 1fr;gap:16px}
+.panel{border:1px solid var(--line);border-radius:16px;padding:22px 22px;background:linear-gradient(150deg,rgba(22,20,15,.7),rgba(12,12,10,.9))}
+.panel h2{font-size:14px;font-weight:700;letter-spacing:.14em;color:var(--faint);margin-bottom:16px}
+.full{grid-column:1 / -1}
+
+/* delivery */
+.dstat{font-size:30px;font-weight:800;color:var(--gold);letter-spacing:.02em}
+.dstat.idle{color:var(--faint)}
+.dlabel{font-size:15px;color:var(--sub);margin-top:6px}
+.track{height:8px;border-radius:5px;background:rgba(255,255,255,.08);margin:18px 0 6px;overflow:hidden}
+.track i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--gold),#f5d9a6);border-radius:5px;transition:width .5s}
+.steprow{display:flex;gap:6px;font-size:12px;color:var(--faint);flex-wrap:wrap}
+.steprow b{color:var(--gold2)}
+.btnrow{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
+.btn{font-family:inherit;font-size:15px;font-weight:600;padding:12px 18px;border-radius:12px;cursor:pointer;
+  border:1px solid var(--line);background:rgba(255,255,255,.05);color:var(--ink)}
+.btn:hover{border-color:rgba(231,180,94,.5)}
+.btn.gold{border-color:rgba(231,180,94,.5);background:rgba(231,180,94,.14);color:#f4e6c9}
+.btn.danger:hover{border-color:rgba(232,136,136,.6);color:#f0b9b9}
+
+/* wardrobe */
+.wgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.wcell{border:1px solid var(--line);border-radius:12px;padding:14px;text-align:center}
+.wcell .wl{font-size:12px;color:var(--faint);letter-spacing:.1em}
+.wcell .wv{font-size:20px;font-weight:700;margin-top:6px}
+.wv.open,.wv.WHITE,.wv.UNLOCKED{color:var(--gold)}
+.wv.OPEN{color:var(--warn)}
+.wv.AMBER{color:var(--warn)}
+.airlock{margin-top:16px;font-size:14px;padding:11px 13px;border-radius:10px;border:1px solid var(--line)}
+.airlock.ok{color:var(--ok);border-color:rgba(127,208,160,.4);background:rgba(127,208,160,.06)}
+.airlock.bad{color:var(--bad);border-color:rgba(232,136,136,.5);background:rgba(232,136,136,.08)}
+
+/* config */
+.crow{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;font-size:15px}
+.crow input[type=number]{width:110px;font-family:inherit;font-size:15px;padding:9px 11px;border-radius:10px;
+  border:1px solid var(--line);background:rgba(255,255,255,.05);color:var(--ink)}
+.switch{position:relative;width:52px;height:28px}
+.switch input{display:none}
+.slider{position:absolute;inset:0;background:rgba(255,255,255,.12);border-radius:20px;cursor:pointer;transition:.2s}
+.slider::before{content:'';position:absolute;width:22px;height:22px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s}
+.switch input:checked+.slider{background:rgba(231,180,94,.55)}
+.switch input:checked+.slider::before{transform:translateX(24px)}
+
+/* stock table */
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line)}
+th{font-size:12px;color:var(--faint);letter-spacing:.08em;font-weight:600}
+td .sz{color:var(--sub)}
+td .sz.out{color:var(--bad);text-decoration:line-through;opacity:.7}
+.price{color:var(--gold2)}
+
+/* log */
+.log{font-size:13px;color:var(--sub);line-height:1.9;max-height:230px;overflow-y:auto;
+  background:rgba(0,0,0,.2);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.log b{color:var(--gold2)}
+.log .t{color:var(--faint)}
+@media(max-width:900px){.grid{grid-template-columns:1fr}.wgrid{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login">
+  <form class="lcard" id="lform">
+    <div class="lbrand">FIT STAGE</div>
+    <div class="ltitle">Store Manager</div>
+    <div class="lsub">운영자 로그인</div>
+    <div class="lfield"><label>아이디</label><input id="lid" autocomplete="username" placeholder="likelion"/></div>
+    <div class="lfield"><label>비밀번호</label><input id="lpw" type="password" autocomplete="current-password" placeholder="••••••"/></div>
+    <button class="lbtn" type="submit">로그인</button>
+    <div class="lerr" id="lerr"></div>
+    <div class="lnote">운영 전용 콘솔 · 데모 클라이언트 인증</div>
+  </form>
+</div>
+
+<!-- CONSOLE -->
+<div id="console" class="hidden">
+  <header class="header">
+    <div class="hleft">
+      <a class="back" href="/ui/">← 홈</a>
+      <span class="brand">FIT STAGE</span>
+      <span class="tag">STORE MANAGER</span>
+    </div>
+    <div class="hright"><span class="odot"></span>Agent Online · ROOM 01
+      <button class="logout" id="logout">로그아웃</button>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <div class="dh">
+      <div><div class="k">STORE OPERATIONS</div><h1>매장 관제</h1></div>
+      <div class="rid">성수 플래그십 · ROOM 01<br><span id="sidLabel">세션 —</span></div>
+    </div>
+
+    <div class="grid">
+      <!-- 딜리버리 -->
+      <div class="panel">
+        <h2>딜리버리 상태머신</h2>
+        <div class="dstat idle" id="dstat">대기 중</div>
+        <div class="dlabel" id="dlabel">진행 중인 딜리버리가 없습니다.</div>
+        <div class="track"><i id="dbar"></i></div>
+        <div class="steprow" id="dsteps">REQUESTED · PICKING · ON_RAIL · ENTERING · SEALED · STAGING · READY</div>
+        <div class="btnrow">
+          <button class="btn gold" id="bAdvance">▸ 수동 진행 (advance)</button>
+          <button class="btn danger" id="bCancel">✕ 취소</button>
+        </div>
+      </div>
+
+      <!-- 워드로브 -->
+      <div class="panel">
+        <h2>워드로브 · 에어락</h2>
+        <div class="wgrid">
+          <div class="wcell"><div class="wl">서비스 문 ①</div><div class="wv" id="wService">—</div></div>
+          <div class="wcell"><div class="wl">고객 문 ②</div><div class="wv" id="wCustomer">—</div></div>
+          <div class="wcell"><div class="wl">조명</div><div class="wv" id="wLight">—</div></div>
+        </div>
+        <div class="airlock ok" id="airlock">에어락 정상 — 두 문 동시 개방 없음</div>
+      </div>
+
+      <!-- 연출 설정 -->
+      <div class="panel">
+        <h2>연출 설정 (demo/config)</h2>
+        <div class="crow"><span>자동 진행 (auto advance)</span>
+          <label class="switch"><input type="checkbox" id="cAuto" checked/><span class="slider"></span></label>
+        </div>
+        <div class="crow"><span>단계별 소요 (ms)</span><input type="number" id="cMs" value="1500" min="100" step="100"/></div>
+        <div class="btnrow"><button class="btn gold" id="bApply">설정 적용</button></div>
+      </div>
+
+      <!-- 운영 -->
+      <div class="panel">
+        <h2>운영</h2>
+        <div class="dlabel">세션·딜리버리 초기화 후 재시연할 수 있습니다.</div>
+        <div class="btnrow"><button class="btn" id="bReset">↺ 데모 전체 리셋</button></div>
+      </div>
+
+      <!-- 재고 -->
+      <div class="panel full">
+        <h2>재고 <button class="btn" id="bStock" style="float:right;padding:6px 12px;font-size:13px">새로고침</button></h2>
+        <table><thead><tr><th>상품</th><th>카테고리</th><th>가격</th><th>사이즈별 재고</th></tr></thead>
+          <tbody id="stock"></tbody></table>
+      </div>
+
+      <!-- 이벤트 로그 -->
+      <div class="panel full">
+        <h2>실시간 이벤트 로그 (SSE)</h2>
+        <div class="log" id="log"><span class="t">대기 중…</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="/ui/fitstage.js"></script>
+<script>
+const F=window.FitStage;
+const $=id=>document.getElementById(id);
+const ADMIN={id:'likelion',pw:'12345'};
+const STEPS=['REQUESTED','PICKING','ON_RAIL','ENTERING','SEALED','STAGING','READY'];
+let SID=null, latestDid=null, started=false;
+
+/* ---------- 로그인 ---------- */
+function showConsole(){ $('login').classList.add('hidden'); $('console').classList.remove('hidden'); if(!started){started=true;init();} }
+$('lform').addEventListener('submit',e=>{
+  e.preventDefault();
+  if($('lid').value.trim()===ADMIN.id && $('lpw').value===ADMIN.pw){
+    sessionStorage.setItem('fitstage.staff','1'); $('lerr').textContent=''; showConsole();
+  }else{ $('lerr').textContent='아이디 또는 비밀번호가 올바르지 않습니다.'; }
+});
+$('logout').addEventListener('click',()=>{ sessionStorage.removeItem('fitstage.staff'); location.reload(); });
+if(sessionStorage.getItem('fitstage.staff')==='1') showConsole();
+
+/* ---------- 로그 ---------- */
+function now(){ const d=new Date(); return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')+':'+String(d.getSeconds()).padStart(2,'0'); }
+function log(html){ const l=$('log'); l.innerHTML+=`<br><span class="t">${now()}</span> ${html}`; l.scrollTop=l.scrollHeight; }
+
+/* ---------- 재고 ---------- */
+async function loadStock(){
+  try{
+    const cat=await F.api('/catalog/products?limit=100');
+    $('stock').innerHTML=(cat.items||[]).map(p=>{
+      const sizes=(p.sizes||[]).map(s=>`<span class="sz ${s.stock>0?'':'out'}">${s.size} ${s.stock>0?s.stock+'개':'품절'}</span>`).join(' · ');
+      return `<tr><td>${p.name}</td><td>${p.category}</td><td class="price">${F.krw(p.price)}</td><td>${sizes}</td></tr>`;
+    }).join('');
+  }catch(e){ log('<b>재고 조회 실패</b> '+(e.message||e)); }
+}
+
+/* ---------- 워드로브 ---------- */
+function renderWardrobe(w){
+  if(!w)return;
+  $('wService').textContent=w.serviceDoor; $('wService').className='wv '+w.serviceDoor;
+  $('wCustomer').textContent=w.customerDoor; $('wCustomer').className='wv '+w.customerDoor;
+  $('wLight').textContent=w.light; $('wLight').className='wv '+w.light;
+  const violated = w.serviceDoor==='OPEN' && w.customerDoor!=='LOCKED';
+  const a=$('airlock');
+  if(violated){ a.className='airlock bad'; a.textContent='⚠ 에어락 위반 감지'; }
+  else{ a.className='airlock ok'; a.textContent='에어락 정상 — 두 문 동시 개방 없음'; }
+  if(w.currentDeliveryId) latestDid=w.currentDeliveryId;
+}
+async function pollWardrobe(){
+  try{ renderWardrobe(await F.api('/rooms/room01/wardrobe')); }catch(e){}
+}
+
+/* ---------- 딜리버리 ---------- */
+function renderDelivery(d){
+  if(!d || d.status==='CANCELLED' || d.status==='FAILED'){
+    $('dstat').textContent = d? d.status : '대기 중'; $('dstat').className='dstat idle';
+    $('dlabel').textContent = d? '종료된 딜리버리' : '진행 중인 딜리버리가 없습니다.';
+    $('dbar').style.width='0'; return;
+  }
+  const idx=STEPS.indexOf(d.status);
+  $('dstat').textContent=d.status; $('dstat').className='dstat'+(d.status==='READY'?'':'');
+  $('dlabel').textContent=(d.label||'')+(d.deliveryId?(' · '+d.deliveryId):'');
+  $('dbar').style.width=Math.round(((idx+1)/STEPS.length)*100)+'%';
+  $('dsteps').innerHTML=STEPS.map((s,i)=>i===idx?`<b>${s}</b>`:s).join(' · ');
+}
+
+/* ---------- 제어 ---------- */
+$('bAdvance').addEventListener('click',async()=>{
+  if(!latestDid){ log('진행할 딜리버리가 없습니다.'); return; }
+  try{ const d=await F.api('/demo/deliveries/'+latestDid+'/advance',{method:'POST'}); log('<b>수동 진행</b> → '+d.status); }
+  catch(e){ log('<b>진행 불가</b> '+(e.message||e)); }
+});
+$('bCancel').addEventListener('click',async()=>{
+  if(!SID||!latestDid){ log('취소할 딜리버리가 없습니다.'); return; }
+  try{ const d=await F.api('/sessions/'+SID+'/deliveries/'+latestDid+'/cancel',{method:'POST'}); log('<b>취소</b> → '+d.status); }
+  catch(e){ log('<b>취소 불가</b> '+(e.message||e)); }
+});
+$('bApply').addEventListener('click',async()=>{
+  const ms=Math.max(100,parseInt($('cMs').value)||1500);
+  const stepMs={}; ['PICKING','ON_RAIL','ENTERING','SEALED','STAGING','READY'].forEach(s=>stepMs[s]=ms);
+  try{ await F.api('/demo/config',{method:'PATCH',body:JSON.stringify({deliveryStepMs:stepMs,autoAdvance:$('cAuto').checked})});
+    log('<b>연출 설정 적용</b> · '+ms+'ms/단계 · auto '+($('cAuto').checked?'ON':'OFF')); }
+  catch(e){ log('<b>설정 실패</b> '+(e.message||e)); }
+});
+$('bReset').addEventListener('click',async()=>{
+  try{ await F.api('/demo/reset',{method:'POST'}); F.clearSession(); latestDid=null;
+    renderDelivery(null); log('<b>데모 전체 리셋</b> 완료'); await loadStock(); }
+  catch(e){ log('<b>리셋 실패</b> '+(e.message||e)); }
+});
+$('bStock').addEventListener('click',loadStock);
+
+/* ---------- 초기화 ---------- */
+async function init(){
+  await loadStock();
+  try{
+    const s=await F.ensureSession(); SID=s.sessionId; $('sidLabel').textContent='세션 '+SID;
+    F.subscribe(SID,{
+      'delivery.updated':(d)=>{ latestDid=d.deliveryId||latestDid; renderDelivery(d); log('delivery.updated · <b>'+d.status+'</b> ('+d.stepIndex+'/'+d.totalSteps+')'); },
+      'wardrobe.updated':(w)=>{ renderWardrobe(w); log('wardrobe.updated · 문①'+w.serviceDoor+' 문②'+w.customerDoor+' 조명'+w.light); },
+      'wardrobe.ready':(d)=>{ renderDelivery({status:'READY',label:'준비 완료',deliveryId:d.deliveryId}); log('<b>wardrobe.ready</b> · 리빌 ✦'); },
+      'keep.updated':(k)=>log('keep.updated · 합계 '+F.krw(k.total)),
+      'handoff.claimed':()=>log('<b>handoff.claimed</b> · 폰으로 전달됨'),
+      'session.closed':(x)=>log('session.closed · purged '+x.purged),
+    });
+    log('관제 시작 · 세션 '+SID);
+  }catch(e){ log('<b>백엔드 연결 실패</b> '+(e.message||e)); }
+  pollWardrobe(); setInterval(pollWardrobe,1500);
+}
+</script>
+</body>
+</html>

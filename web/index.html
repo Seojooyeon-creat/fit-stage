@@ -24,6 +24,9 @@ body{margin:0;min-height:100vh;color:var(--white);
 .brand{font-size:22px;font-weight:800;letter-spacing:.34em;color:var(--white)}
 .hmeta{display:flex;align-items:center;gap:11px;color:var(--gold);font-size:13px;font-weight:700;letter-spacing:.2em}
 .dot{width:8px;height:8px;border-radius:50%;background:var(--gold2);box-shadow:0 0 12px rgba(211,162,80,.6)}
+.adminlink{font-size:12px;letter-spacing:.1em;color:var(--muted);text-decoration:none;
+  border:1px solid var(--line2);border-radius:9px;padding:7px 12px;transition:.2s}
+.adminlink:hover{color:var(--gold2);border-color:var(--line)}
 
 /* HERO */
 .hero{width:min(1500px,92vw);margin:0 auto;padding:70px 0 40px;display:grid;
@@ -85,7 +88,10 @@ body{margin:0;min-height:100vh;color:var(--white);
 <body>
 <header class="header">
   <div class="brand">FIT STAGE</div>
-  <div class="hmeta"><span class="dot"></span>AGENT-FIRST RETAIL EXPERIENCE</div>
+  <div style="display:flex;align-items:center;gap:18px">
+    <div class="hmeta"><span class="dot"></span>AGENT-FIRST RETAIL EXPERIENCE</div>
+    <a class="adminlink" href="/ui/staff.html">관리자</a>
+  </div>
 </header>
 
 <section class="hero">
